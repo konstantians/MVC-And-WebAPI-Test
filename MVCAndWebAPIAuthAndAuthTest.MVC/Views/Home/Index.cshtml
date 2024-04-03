@@ -1,0 +1,361 @@
+﻿@model IndexViewModel
+@inject IHttpClientFactory _httpClientFactory;
+
+
+@{
+    ViewData["Title"] = "Home Page";
+    bool successfulAccountActivation = (bool)ViewData["SuccessfulAccountActivation"]!;
+    bool failedAccountActivation = (bool)ViewData["FailedAccountActivation"]!;
+    bool successfulSignIn = (bool)ViewData["SuccessfulSignIn"]!;
+    bool successfulPasswordReset = (bool)ViewData["SuccessfulPasswordReset"]!;
+    bool failedPasswordReset = (bool)ViewData["FailedPasswordReset"]!;
+    bool successfulPostCreation = (bool)ViewData["SuccessfulPostCreation"]!;
+    bool failedPostCreation = (bool)ViewData["FailedPostCreation"]!;
+    bool successfulPostUpdate = (bool)ViewData["SuccessfulPostUpdate"]!;
+    bool failedPostUpdate = (bool)ViewData["FailedPostUpdate"]!;
+    bool successfulPostDeletion = (bool)ViewData["SuccessfulPostDeletion"]!;
+    bool failedPostDeletion = (bool)ViewData["FailedPostDeletion"]!;
+
+    IdentityUser? appUser;
+
+    var accessToken = Context.Request.Cookies["SocialMediaAppAuthenticationCookie"];
+
+    if (string.IsNullOrEmpty(accessToken))
+    {
+        appUser = null!;
+    }
+    else
+    {
+        HttpClient httpClient = _httpClientFactory.CreateClient("ApiClient");
+        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        var response = await httpClient.GetAsync("Authentication/TryGetCurrentUser");
+
+        var responseBody = await response.Content.ReadAsStringAsync();
+        appUser = JsonSerializer.Deserialize<IdentityUser>(responseBody, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+    }
+
+    int dataTestIdCounter = 0;
+}
+
+@if (successfulAccountActivation || successfulSignIn || successfulPasswordReset ||
+   successfulPostCreation || successfulPostUpdate || successfulPostDeletion)
+{
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+        </symbol>
+    </svg>
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-success d-flex align-items-center alert-dismissible fade show" role="alert" data-testid="successfulOperationAlert">
+                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill" /></svg>
+                @if (successfulAccountActivation)
+                {
+                    <div>You have successfully activated your account!</div>
+                }
+                else if (successfulSignIn)
+                {
+                    <div>You have successfully signed in!</div>
+                }
+                else if (successfulPasswordReset)
+                {
+                    <div>You have successfully reset your password!</div>
+                }
+                else if (successfulPostCreation)
+                {
+                    <div data-testid="successfulPostCreation">Your post has successfully been created!</div>
+                }
+                else if (successfulPostUpdate)
+                {
+                    <div data-testid="successfulPostUpdate">Your post has successfully been updated!</div>
+                }
+                else if (successfulPostDeletion)
+                {
+                    <div data-testid="successfulPostDeletion">Your post has successfully been deleted!</div>
+                }
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+}
+else if (failedAccountActivation || failedPostCreation || failedPostUpdate || failedPostDeletion)
+{
+    <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+        <symbol id="exclamation-triangle-fill" viewBox="0 0 16 16">
+            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+        </symbol>
+    </svg>
+
+    <div class="alert alert-danger d-flex align-items-center alert-dismissible fade show mt-2" role="alert">
+        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill" /></svg>
+        @if (failedAccountActivation)
+        {
+            <div>
+                Unfortunately something went wrong with your account activation. <br>
+                Please try again or contact us through our email kinnaskonstantinos0@gmail.com.
+            </div>
+        }
+        @if (failedPasswordReset)
+        {
+            <div>
+                Unfortunately something went wrong and your account password could not be changed. <br>
+                Please try again or contact us through our email kinnaskonstantinos0@gmail.com.
+            </div>
+        }
+        @if (failedPostCreation)
+        {
+            <div>
+                Unfortunately something went wrong and your post could not be created. <br>
+                Please try again or contact us through our email kinnaskonstantinos0@gmail.com.
+            </div>
+        }
+        @if (failedPostUpdate)
+        {
+            <div>
+                Unfortunately something went wrong and your post could not be updated. <br>
+                Please try again or contact us through our email kinnaskonstantinos0@gmail.com.
+            </div>
+        }
+        @if (failedPostDeletion)
+        {
+            <div>
+                Unfortunately something went wrong and your post could not be deleted. <br>
+                Please try again or contact us through our email kinnaskonstantinos0@gmail.com.
+            </div>
+        }
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+
+@if(appUser is not null)
+{
+    <div class="row">
+        <div class="offset-4 col-4">
+            <h1 class="h1 text-center" data-testid="homeTitle">Recent Posts</h1>
+        </div>
+        <div class="col-4">
+            <div class="text-end">
+                <a class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addPostModal" data-testid="addPostButton">
+                    Add Post <i class="fa-solid fa-plus"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <h1 class="h1 text-center" data-testid="homeTitle">Recent Posts</h1>
+}
+
+<div class="row">
+    @{
+        int count = 0;
+        int team = 0;
+    }
+    @foreach (Post post in Model.Posts)
+    {
+        //int positiveCount = post.PostVotes.Where(postVote => postVote.IsPositive).Count();
+        //int negativeCount = post.PostVotes.Where(postVote => !postVote.IsPositive).Count();
+        string teamCount = $"team-{team}";
+        string isHidden = team > 0 ? "none" : "block";
+        <div class="offset-1 col-10 @teamCount" style="display:@isHidden">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">@post.Title</h4>
+                            <h5 class="card-subtitle text-muted">From: @post.AppUser!.UserName</h5>
+                        </div>
+                        <div></div>
+                        <div>
+                            <p class="text-bold text-muted" style="font-size:18px;">@post.SentAt.ToString("dd/MMM/yyyy HH:mm")</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">@post.Content</p>
+                </div>
+                <div class="card-footer">
+                    @* @{
+                        string btnPositiveCountClass = post.PostVotes.Any(postVote => postVote.UserId == currentUserId && postVote.IsPositive) ?
+                        "btn-primary" : "btn-outline-primary";
+                        string btnNegativeCountClass = post.PostVotes.Any(postVote => postVote.UserId == currentUserId && !postVote.IsPositive) ?
+                        "btn-danger" : "btn-outline-danger";
+                    }
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <a class="btn @btnPositiveCountClass me-2" style="min-width:100px;" id="@post.Id-positiveCount"
+                               onclick="AddVote(@post.Id, true, '@isUserLoggedIn')">
+                                @positiveCount Likes <i class="fa-regular fa-thumbs-up"></i>
+                            </a>
+                            <a class="btn @btnNegativeCountClass style="min-width:100px;" id="@post.Id-negativeCount"
+                               onclick="AddVote(@post.Id, false, '@isUserLoggedIn')">
+                                @negativeCount Dislikes <i class="fa-regular fa-thumbs-down"></i>
+                            </a>
+                        </div>
+                        @if (currentUserId == post.UserId)
+                        {
+                            <div>
+                                <a class="btn btn-primary me-2" style="min-width:100px;"
+                                   data-bs-toggle="modal" data-bs-target="#editPostModal-@post.Id">
+                                    Edit <i class="fa-solid fa-pen-to-square"></i>
+                                </a>
+                                <a class="btn btn-danger" style="min-width:100px;"
+                                   data-bs-toggle="modal" data-bs-target="#deletePostModal-@post.Id">
+                                    Delete <i class="fa-solid fa-trash"></i>
+                                </a>
+                            </div>
+                        }
+                    </div> *@
+                    <div class="d-flex justify-content-between">
+                        <div>
+                        </div>
+                        <div>
+                            <a class="btn btn-primary me-2" style="min-width:100px;"
+                               data-bs-toggle="modal" data-bs-target="#editPostModal-@post.Id" data-testid="editPostButton-@dataTestIdCounter">
+                                Edit <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <a class="btn btn-danger" style="min-width:100px;"
+                               data-bs-toggle="modal" data-bs-target="#deletePostModal-@post.Id" data-testid="deletePostButton-@dataTestIdCounter">
+                                Delete <i class="fa-solid fa-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        count++;
+        dataTestIdCounter++;
+        if (count % 3 == 0 && post != Model.Posts.Last())
+        {
+            <div class="text-center" id="buttonTeam-@team" style="display:@isHidden">
+                <a class="btn btn-primary" onclick="ShowMore(@team + 1)">Show More</a>
+            </div>
+            team += 1;
+            count = 0;
+        }
+    }
+</div>
+
+
+<div class="modal fade" id="addPostModal" tabindex="-1">
+    <form id="addPostForm" method="post" asp-controller="Home" asp-action="AddPost">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addPostTitle">Add Post Form</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="text-align: left;">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label asp-for="CreatePostModel.Title" class="form-label">Title</label>
+                                <input asp-for="CreatePostModel.Title" type="text" class="form-control" data-testid="addPostTitleInput">
+                                <span asp-validation-for="CreatePostModel.Title" class="text-danger" />
+                            </div>
+                            <div class=" col-12 mb-3">
+                                <label asp-for="CreatePostModel.Content" class="form-label">Content</label>
+                                <textarea asp-for="CreatePostModel.Content" class="form-control" rows="4" data-testid="addPostContentInput"></textarea>
+                                <span asp-validation-for="CreatePostModel.Content" class="text-danger" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" data-testid="addPostConfirmButton">Submit</button>
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@if (appUser is not null)
+{
+    dataTestIdCounter = 0;
+    @foreach (Post post in Model.Posts.Where(post => post.UserId == appUser.Id))
+    {
+        <div class="modal fade" id="editPostModal-@post.Id" tabindex="-1">
+            <form id="editPostForm-@post.Id" method="post" asp-controller="Home" asp-action="EditPost">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editPostTitle-@post.Id">Edit Post Form</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" style="text-align: left;">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <label asp-for="EditPostModel.Title" class="form-label">Title</label>
+                                        <input asp-for="EditPostModel.Title" value="@post.Title" type="text" class="form-control" 
+                                            data-testid="editPostTitleInput-@dataTestIdCounter">
+                                        <span asp-validation-for="EditPostModel.Title" class="text-danger" />
+                                    </div>
+                                    <div class=" col-12 mb-3">
+                                        <label asp-for="EditPostModel.Content" class="form-label">Content</label>
+                                        <textarea asp-for="EditPostModel.Content" class="form-control" rows="4"
+                                            data-testid="editPostContentInput-@dataTestIdCounter">@post.Content</textarea>
+                                        <span asp-validation-for="EditPostModel.Content" class="text-danger" />
+                                    </div>
+                                    <input asp-for="EditPostModel.PostId" value="@post.Id" hidden />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary" data-testid="editPostConfirmButton-@dataTestIdCounter">Submit</button>
+                            <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal fade" id="deletePostModal-@post.Id" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deletePostModalTitle-@post.Id">Delete Post Dialog</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="text-align: left;">
+                        Are you sure you want to delete this post?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancel</button>
+                        <form asp-action="DeletePost" asp-controller="Home">
+                            <input name="postId" value="@post.Id" hidden />
+                            <button type="submit" class="btn btn-danger ms-1" data-testid="deletePostConfirmButton-@dataTestIdCounter">Confirm Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        dataTestIdCounter++;
+    }
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        function ShowMore(team){
+            let cards = document.getElementsByClassName('team-' + team);
+            for (let i = 0; i < cards.length; i++) {
+                cards[i].style.display = "block";
+            }
+            let currentButtomTeam = team - 1;
+            let button = document.getElementById('buttonTeam-' + currentButtomTeam);
+            button.style.display = "none";
+
+            let buttonOfNextTeam = document.getElementById('buttonTeam-' + team);
+            if (buttonOfNextTeam) {
+                buttonOfNextTeam.style.display = "block";
+            }
+        }
+    </script>
+}

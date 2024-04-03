@@ -1,0 +1,363 @@
+﻿@model EditAccountModel
+
+@{
+    ViewData["Title"] = "Edit Account";
+    bool duplicateUsernameError = (bool)ViewData["DuplicateUsernameError"]!;
+    bool basicInformationChangeError = (bool)ViewData["BasicInformationChangeError"]!;
+    bool basicInformationChangeSuccess = (bool)ViewData["BasicInformationChangeSuccess"]!;
+    bool passwordMismatchError = (bool)ViewData["PasswordMismatchError"]!;
+    bool passwordChangeError = (bool)ViewData["PasswordChangeError"]!;
+    bool passwordChangeSuccess = (bool)ViewData["PasswordChangeSuccess"]!;
+    bool duplicateEmailError = (bool)ViewData["DuplicateEmailError"]!;
+}
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+    </symbol>
+</svg>
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+    </symbol>
+</svg>
+
+<div id="alertsLocation">
+
+</div>
+
+@if (duplicateUsernameError || basicInformationChangeError || passwordChangeError || passwordMismatchError || duplicateEmailError)
+{
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-danger d-flex align-items-center alert-dismissible fade show" role="alert">
+                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill" /></svg>
+                @if (duplicateUsernameError)
+                {
+                    <div data-testid="duplicateUsernameError">There is another user with the given username.</div>
+                }
+                else if (basicInformationChangeError)
+                {
+                    <div>
+                        Something went wrong while updating your account's basic information.
+                        Please try again or contact us through our email kinnaskonstantinos0@gmail.com.
+                    </div>
+                }
+                else if (passwordChangeError)
+                {
+                    <div>
+                        Something went wrong while updating your account password.
+                        Please try again or contact us through our email kinnaskonstantinos0@gmail.com.
+                    </div>
+                }
+                else if (passwordMismatchError)
+                {
+                    <div data-testid="passwordMismatchError">
+                        The current password you provided is not the password of the account.
+                        Please try again or contact us through our email kinnaskonstantinos0@gmail.com.
+                    </div>
+                }
+                else if (duplicateEmailError)
+                {
+                    <div data-testid="duplicateEmailError">There is another user with the given email.</div>
+                }
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+}
+else if (basicInformationChangeSuccess || passwordChangeSuccess)
+{
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-success d-flex align-items-center alert-dismissible fade show" role="alert">
+                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill" /></svg>
+                @if (basicInformationChangeSuccess)
+                {
+                    <div data-testid="changeAccountBasicSettingsSuccessAlert">Your account's basic information has been updated successfully!</div>
+                }
+                else if(passwordChangeSuccess){
+                    <div data-testid="changeAccountPasswordSuccessAlert">Your account password has been updated successfully!</div>
+                }
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="shadow p-4" style="background-color:white;">
+    <h2 class="text-center mb-4" data-testid="editAccountTitle">User Account</h2>
+    <div class="row">
+        <form class="col-4" asp-controller="Account" asp-action="ChangeBasicAccountSettings">
+            <div class="row">
+                <h4 class="text-center">Basic Account Settings </h4>
+                <div class="col-12 mb-4 mt-1">
+                    <label class="form-label" asp-for="@Model.AccountBasicSettingsViewModel.Username">
+                        <i class="fa-solid fa-user me-2"></i>Account Username
+                    </label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" asp-for="@Model.AccountBasicSettingsViewModel.Username"
+                               value="@Model.AccountBasicSettingsViewModel.Username" data-testid="usernameInput" readOnly>
+                        <a class="btn btn-outline-primary" id="usernameButton"
+                           onclick="toggleInputField('AccountBasicSettingsViewModel_Username', 'usernameButton')" data-testid="usernameEditButton">
+                            <i class="fa-solid fa-pencil"></i>
+                        </a>
+                    </div>
+                    <span asp-validation-for="@Model.AccountBasicSettingsViewModel.Username" class="text-danger"></span>
+                </div>
+                <div class="col-12 mb-4 mt-1">
+                    <label class="form-label" asp-for="@Model.AccountBasicSettingsViewModel.PhoneNumber">
+                        <i class="fa-solid fa-phone me-2"></i>Account Phone Number
+                    </label>
+                    <div class="input-group">
+                        <input type="tel" class="form-control" asp-for="@Model.AccountBasicSettingsViewModel.PhoneNumber"
+                               value="@Model.AccountBasicSettingsViewModel.PhoneNumber" data-testid="phoneNumberInput" readOnly>
+                        <a class="btn btn-outline-primary" id="phoneNumberButton"
+                           onclick="toggleInputField('AccountBasicSettingsViewModel_PhoneNumber', 'phoneNumberButton')" 
+                           data-testid="phoneNumberEditButton">
+                            <i class="fa-solid fa-pencil"></i>
+                        </a>
+                    </div>
+                    <span asp-validation-for="@Model.AccountBasicSettingsViewModel.PhoneNumber" class="text-danger"></span>
+                </div>
+                <div class="d-flex justify-content-center mt-4">
+                    <button type="submit" class="btn btn-primary" data-testid="editBasicSettingsConfirmButton">Confirm Changes</button>
+                </div>
+            </div>
+        </form>
+        <div class="col-4">
+            <div class="row">
+                <h4 class="text-center">Sensitive Account Settings</h4>
+                <div class="col-12 mb-4 mt-1">
+                    @if(Model.ChangePasswordModel.OldPassword is not null){
+                        <label class="form-label" asp-for="@Model.ChangePasswordModel.OldPassword">
+                            <i class="fa-solid fa-lock me-2"></i>Account Password
+                        </label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" asp-for="@Model.ChangePasswordModel.OldPassword"
+                                   value="@Model.ChangePasswordModel.OldPassword" readOnly>
+                            <a class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#changePasswordModal"
+                                data-testid="newPasswordEditModalButton">
+                                <i class="fa-solid fa-pencil"></i>
+                            </a>
+                        </div>
+                        <span asp-validation-for="@Model.ChangePasswordModel.OldPassword" class="text-danger"></span>
+                    }
+                    else
+                    {
+                        <label class="form-label" asp-for="@Model.ChangePasswordModel.OldPassword">
+                            <i class="fa-solid fa-lock me-2"></i>Account Password - Managed By External Provider
+                        </label>
+                        <input type="password" class="form-control" asp-for="@Model.ChangePasswordModel.OldPassword"
+                                   value="ManagedByExternalProvider" readOnly>
+                    }
+                </div>
+                <div class="col-12 mb-4 mt-1">
+                    @{
+                        string managedByExternalProvider = @Model!.ChangeEmailModel!.OldEmail!.Contains("@") ? "" : "- Managed By External Provider";
+                    }
+                    <label class="form-label" asp-for="@Model.ChangeEmailModel.OldEmail">
+                        <i class="fa-solid fa-envelope me-2"></i>Account Email @managedByExternalProvider
+                    </label>
+                    <div class="input-group">
+                        <input type="email" class="form-control" asp-for="@Model.ChangeEmailModel.OldEmail"
+                               value="@Model.ChangeEmailModel.OldEmail" readOnly>
+                        <a class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#changeEmailModal" 
+                            data-testid="newEmailEditModalButton">
+                            <i class="fa-solid fa-pencil"></i>
+                        </a>
+                    </div>
+                    <span asp-validation-for="@Model.ChangeEmailModel.OldEmail" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal to Change Email Address -->
+<div class="modal fade" id="changeEmailModal" tabindex="-1">
+    <form id="changeEmailForm" method="post" asp-controller="Account" asp-action="RequestChangeAccountEmail">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changeEmailTitle">Change Email Form</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="text-align: left;">
+                    <div class="container">
+                        <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                            <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                            </symbol>
+                        </svg>
+                        <div class="alert alert-warning d-flex align-items-center" role="alert">
+                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill" /></svg>
+                            <div>
+                                This action will log you out of your account and it will deactivate it until you confirm your new email.<br />
+                            </div>
+                        </div>
+                        <div class="alert alert-warning d-flex align-items-center" role="alert">
+                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill" /></svg>
+                            <div>
+                                This action may also disconnect your account from your external identity provider(for example Google).<br />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label asp-for="ChangeEmailModel.OldEmail" class="form-label">Old Email</label>
+                                <input asp-for="ChangeEmailModel.OldEmail" type="text" class="form-control" readOnly>
+                            </div>
+                            <div class=" col-12 mb-3">
+                                <label asp-for="ChangeEmailModel.NewEmail" class="form-label">New Email</label>
+                                <input asp-for="ChangeEmailModel.NewEmail" type="text" class="form-control" data-testid="newEmailInput">
+                                <span asp-validation-for="ChangeEmailModel.NewEmail" class="text-danger" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" data-testId="newEmailConfirmModalButton">Submit</button>
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Modal to Change Password -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1">
+    <form id="changePasswordForm" method="post" asp-controller="Account" asp-action="ChangePassword">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changePasswordTitle">Change Password Form</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="text-align: left;">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label asp-for="ChangePasswordModel.OldPassword" class="form-label">Old Password</label>
+                                <input asp-for="ChangePasswordModel.OldPassword" value="" class="form-control" 
+                                    type="password" data-testid="oldPasswordInput">
+                                <span asp-validation-for="ChangePasswordModel.OldPassword" class="text-danger"></span>
+                            </div>
+                            <div class=" col-12 mb-3">
+                                <label asp-for="ChangePasswordModel.NewPassword" class="form-label">New Password</label>
+                                <input asp-for="ChangePasswordModel.NewPassword" class="form-control" type="password" data-testid="newPasswordInput" />
+                                <span asp-validation-for="ChangePasswordModel.NewPassword" class="text-danger"></span>
+                            </div>
+                            <div class=" col-12 mb-3">
+                                <label asp-for="ChangePasswordModel.ConfirmNewPassword" class="form-label">Confirm New Password</label>
+                                <input asp-for="ChangePasswordModel.ConfirmNewPassword" class="form-control"
+                                       type="password" data-testid="confirmNewPasswordInput">
+                                <span asp-validation-for="ChangePasswordModel.ConfirmNewPassword" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" data-testid="newPasswordConfirmModalButton">Submit</button>
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Modal To Add Friend-->
+<div class="modal fade" id="addFriendModal" tabindex="-1" role="dialog" aria-labelledby="addFriendModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addFriendModalLabel">Add Friend Dialog</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="AddFriendChoiceLarge">
+                    <div class="d-flex justify-content-between align-content-center">
+                        <h5 class="mt-2">Choose Invitation Method:</h5>
+                        <div class="btn-group btn-group-sm">
+                            <button type="button" class="btn btn-dark" onclick="showForm('username')"><i class="fa-solid fa-user me-1"></i>Username</button>
+                            <button type="button" class="btn btn-primary" style="min-width:95px;" onclick="showForm('email')"><i class="fa-solid fa-envelope me-1"></i>Email</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="addFriendFormUsername" class="mt-4 mb-3">
+                    <div class="form-group mb-2">
+                        <input class="form-label" name="email" id="hiddenEmail" type="hidden" value="" />
+                        <label for="username" class="control-label"><i class="fa-solid fa-user me-2"></i>Username</label>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="Enter The Username Of The Account" required />
+                    </div>
+                </div>
+                <div id="addFriendFormEmail" class="mt-4 mb-3" style="display:none;">
+                    <div class="form-group ">
+                        <input class="form-label" name="username" id="hiddenUsername" type="hidden" value="" />
+                        <label for="email" class="control-label"><i class="fa-solid fa-envelope me-2"></i>Email</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter The Email Of The Account" required />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary" form="addFriendFormUsername" id="submitButton"
+                        onclick="clearOtherForm(); sendFriendNotification(); $('#addFriendModal').modal('hide');">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Edit button functionality
+        function toggleInputField(inputId, buttonId) {
+            let inputField = document.getElementById(inputId);
+            let button = document.getElementById(buttonId);
+
+            if (inputField && button) {
+                if (inputField.readOnly) {
+                    inputField.readOnly = false;
+                    button.innerHTML = '<i class="fa-solid fa-check"></i>';
+                } else {
+                    inputField.readOnly = true;
+                    button.innerHTML = '<i class="fa-solid fa-pencil"></i>';
+                }
+            }
+        }
+
+        function showForm(method) {
+            const formUsername = document.getElementById('addFriendFormUsername');
+            const formEmail = document.getElementById('addFriendFormEmail');
+            if (method === 'username') {
+                formUsername.style.display = 'block';
+                formEmail.style.display = 'none';
+                submitButton.setAttribute('form', 'addFriendFormUsername');
+            } else if (method === 'email') {
+                formUsername.style.display = 'none';
+                formEmail.style.display = 'block';
+                submitButton.setAttribute('form', 'addFriendFormEmail');
+            }
+        }
+
+        // Clears the other form show that there will not be any conflicts
+        function clearOtherForm() {
+            const formUsername = document.getElementById('addFriendFormUsername');
+            if (formUsername.style.display === 'block') {
+                document.getElementById('hiddenEmail').value = "";
+            }
+            else {
+                document.getElementById('hiddenUsername').value = "";
+            }
+        }
+    </script>
+}
+
