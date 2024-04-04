@@ -1,0 +1,136 @@
+name: CD
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-API:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 7.x
+
+      - name: Install EF Core Tools
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Install EF Core Design package
+        run: dotnet add MVCAndWebAPIAuthAndAuthTest.API/MVCAndWebAPIAuthAndAuthTest.API.csproj package Microsoft.EntityFrameworkCore.Design --version 7.0.17
+      
+      - name: Restore Dependencies Of Module SharedModels
+        run: dotnet restore MVCAndWebAPIAuthAndAuthTest.SharedModels/MVCAndWebAPIAuthAndAuthTest.SharedModels.csproj
+      - name: Restore Dependencies Of Module EmailServiceLibrary
+        run: dotnet restore MVCAndWebAPIAuthAndAuthTest.EmailLibrary/MVCAndWebAPIAuthAndAuthTest.EmailLibrary.csproj
+      - name: Restore Dependencies Of Module AuthenticationLibrary
+        run: dotnet restore MVCAndWebAPIAuthAndAuthTest.AuthLibrary/MVCAndWebAPIAuthAndAuthTest.AuthLibrary.csproj
+      - name: Restore Dependencies Of Module DataAccessLibrary
+        run: dotnet restore MVCAndWebAPIAuthAndAuthTest.DataLibrary/MVCAndWebAPIAuthAndAuthTest.DataLibrary.csproj
+      - name: Restore Dependencies Of Module API
+        run: dotnet restore MVCAndWebAPIAuthAndAuthTest.API/MVCAndWebAPIAuthAndAuthTest.API.csproj
+
+      - name: Build Module SharedModels
+        run: dotnet build MVCAndWebAPIAuthAndAuthTest.SharedModels/MVCAndWebAPIAuthAndAuthTest.SharedModels.csproj --configuration Release --no-restore
+      - name: Build Module EmailServiceLibrary
+        run: dotnet build MVCAndWebAPIAuthAndAuthTest.EmailLibrary/MVCAndWebAPIAuthAndAuthTest.EmailLibrary.csproj --configuration Release --no-restore
+      - name: Build Module AuthenticationLibrary
+        run: dotnet build MVCAndWebAPIAuthAndAuthTest.AuthLibrary/MVCAndWebAPIAuthAndAuthTest.AuthLibrary.csproj --configuration Release --no-restore
+      - name: Build Module DataAccessLibrary
+        run: dotnet build MVCAndWebAPIAuthAndAuthTest.DataLibrary/MVCAndWebAPIAuthAndAuthTest.DataLibrary.csproj --configuration Release --no-restore
+      - name: Build Module API
+        run: dotnet build MVCAndWebAPIAuthAndAuthTest.API/MVCAndWebAPIAuthAndAuthTest.API.csproj --configuration Release --no-restore
+
+      - name: DataAccess Migrations
+        run: dotnet ef database update --project MVCAndWebAPIAuthAndAuthTest.DataAccessLibrary/MVCAndWebAPIAuthAndAuthTest.DataLibrary.csproj --startup-project MVCAndWebAPIAuthAndAuthTest.API/MVCAndWebAPIAuthAndAuthTest.API.csproj --context AppDbContext --connection ${{ secrets.DefaultData }}
+
+      - name: Authentication Migrations
+        run: dotnet ef database update --project MVCAndWebAPIAuthAndAuthTest.AuthenticationLibrary/MVCAndWebAPIAuthAndAuthTest.AuthLibrary.csproj --startup-project MVCAndWebAPIAuthAndAuthTest.API/MVCAndWebAPIAuthAndAuthTest.API.csproj --context AppIdentityDbContext --connection ${{ secrets.DefaultAuthentication }}
+      
+      - name: Publish Module SharedModels
+        run: dotnet publish MVCAndWebAPIAuthAndAuthTest.SharedModels/MVCAndWebAPIAuthAndAuthTest.SharedModels.csproj --configuration Release --output "{{ env.DOTNET_ROOT }}\\myapp"
+      - name: Publish Module EmailServiceLibrary
+        run: dotnet publish MVCAndWebAPIAuthAndAuthTest.EmailLibrary/MVCAndWebAPIAuthAndAuthTest.EmailLibrary.csproj --configuration Release --output "${{ env.DOTNET_ROOT }}\\myapp"
+      - name: Publish Module AuthenticationLibrary
+        run: dotnet publish MVCAndWebAPIAuthAndAuthTest.AuthLibrary/MVCAndWebAPIAuthAndAuthTest.AuthLibrary.csproj --configuration Release --output "${{ env.DOTNET_ROOT }}\\myapp"
+      - name: Publish Module DataAccessLibrary
+        run: dotnet publish MVCAndWebAPIAuthAndAuthTest.DataLibrary/MVCAndWebAPIAuthAndAuthTest.DataLibrary.csproj --configuration Release --output "${{ env.DOTNET_ROOT }}\\myapp"
+      - name: Publish Module API
+        run: dotnet publish MVCAndWebAPIAuthAndAuthTest.API/MVCAndWebAPIAuthAndAuthTest.API.csproj --configuration Release --output "${{ env.DOTNET_ROOT }}\\myapp"
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v3
+        with:
+          name: .net-api
+          path: ${{env.DOTNET_ROOT}}\\myapp
+
+  build-MVC:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 7.x
+          
+      - name: Restore dependencies Of Module MVC
+        run: dotnet restore MVCAndWebAPIAuthAndAuthTest.MVC/MVCAndWebAPIAuthAndAuthTest.MVC.csproj
+      - name: Restore dependencies Of Module SharedModels
+        run: dotnet restore MVCAndWebAPIAuthAndAuthTest.SharedModels/MVCAndWebAPIAuthAndAuthTest.SharedModels.csproj
+
+      - name: Build Module SharedModels
+        run: dotnet build MVCAndWebAPIAuthAndAuthTest.SharedModels/MVCAndWebAPIAuthAndAuthTest.SharedModels.csproj --configuration Release --no-restore
+      - name: Build Module MVC
+        run: dotnet build MVCAndWebAPIAuthAndAuthTest.MVC/MVCAndWebAPIAuthAndAuthTest.MVC.csproj --configuration Release --no-restore
+      
+      - name: Publish Module SharedModels
+        run: dotnet publish MVCAndWebAPIAuthAndAuthTest.SharedModels/MVCAndWebAPIAuthAndAuthTest.SharedModels.csproj --configuration Release --output "{{ env.DOTNET_ROOT }}\\myapp"
+      - name: Publish Module MVC
+        run: dotnet publish MVCAndWebAPIAuthAndAuthTest.MVC/MVCAndWebAPIAuthAndAuthTest.MVC.csproj --configuration Release --output "${{ env.DOTNET_ROOT }}\\myapp"
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v3
+        with:
+          name: .net-mvc
+          path: ${{env.DOTNET_ROOT}}\\myapp
+
+  deploy:
+    runs-on: windows-latest
+    needs: [build-API, build-MVC]
+    environment:
+      name: 'production'
+    
+    steps:
+      - name: Download API artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: .net-api
+      
+      - name: Deploy API to Azure
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'ApiPartOfTest'
+          slot-name: 'production'
+          package: .net-api
+          publish-profile: ${{ secrets.AzureAppService_PublishProfile_2E12C0287DD846AFB9E33467B3A5BF17 }}
+      
+      - name: Download MVC artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: .net-mvc
+      
+      - name: Deploy MVC to Azure
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'MVCPartOfTest'
+          slot-name: 'production'
+          package: .net-mvc
+          publish-profile: ${{ secrets.AzureAppService_PublishProfile_E0C70FDBCA21402FB2DD103CA91F1EDC }}
+
+       
