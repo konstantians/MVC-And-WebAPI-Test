@@ -46,10 +46,10 @@ jobs:
         run: dotnet build MVCAndWebAPIAuthAndAuthTest.API/MVCAndWebAPIAuthAndAuthTest.API.csproj --configuration Release --no-restore
 
       - name: DataAccess Migrations
-        run: dotnet ef database update --project MVCAndWebAPIAuthAndAuthTest.DataAccessLibrary/MVCAndWebAPIAuthAndAuthTest.DataLibrary.csproj --startup-project MVCAndWebAPIAuthAndAuthTest.API/MVCAndWebAPIAuthAndAuthTest.API.csproj --context AppDbContext --connection ${{ secrets.DefaultData }}
+        run: dotnet ef database update --project MVCAndWebAPIAuthAndAuthTest.DataLibrary/MVCAndWebAPIAuthAndAuthTest.DataLibrary.csproj --startup-project MVCAndWebAPIAuthAndAuthTest.API/MVCAndWebAPIAuthAndAuthTest.API.csproj --context AppDbContext --connection ${{ secrets.DefaultData }}
 
       - name: Authentication Migrations
-        run: dotnet ef database update --project MVCAndWebAPIAuthAndAuthTest.AuthenticationLibrary/MVCAndWebAPIAuthAndAuthTest.AuthLibrary.csproj --startup-project MVCAndWebAPIAuthAndAuthTest.API/MVCAndWebAPIAuthAndAuthTest.API.csproj --context AppIdentityDbContext --connection ${{ secrets.DefaultAuthentication }}
+        run: dotnet ef database update --project MVCAndWebAPIAuthAndAuthTest.AuthLibrary/MVCAndWebAPIAuthAndAuthTest.AuthLibrary.csproj --startup-project MVCAndWebAPIAuthAndAuthTest.API/MVCAndWebAPIAuthAndAuthTest.API.csproj --context AppIdentityDbContext --connection ${{ secrets.DefaultAuthentication }}
       
       - name: Publish Module SharedModels
         run: dotnet publish MVCAndWebAPIAuthAndAuthTest.SharedModels/MVCAndWebAPIAuthAndAuthTest.SharedModels.csproj --configuration Release --output "{{ env.DOTNET_ROOT }}\\myapp"
