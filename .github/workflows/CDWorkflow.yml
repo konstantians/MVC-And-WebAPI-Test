@@ -118,7 +118,7 @@ jobs:
           app-name: 'ApiPartOfTest'
           slot-name: 'production'
           package: .net-api
-          publish-profile: ${{ secrets.AzureAppService_PublishProfile_2E12C0287DD846AFB9E33467B3A5BF17 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E0C70FDBCA21402FB2DD103CA91F1EDC }}
       
       - name: Download MVC artifact from build job
         uses: actions/download-artifact@v3
@@ -131,6 +131,6 @@ jobs:
           app-name: 'MVCPartOfTest'
           slot-name: 'production'
           package: .net-mvc
-          publish-profile: ${{ secrets.AzureAppService_PublishProfile_E0C70FDBCA21402FB2DD103CA91F1EDC }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_2E12C0287DD846AFB9E33467B3A5BF17  }}
 
        
