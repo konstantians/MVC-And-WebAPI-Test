@@ -30,9 +30,13 @@ public class Program
         {
             options.AddDefaultPolicy(builder =>
             {
-                builder.WithOrigins("https://localhost:44304")  // Allow requests from this origin
-                       .AllowAnyHeader()                      // Allow any header
-                       .AllowAnyMethod();                     // Allow any HTTP method
+                builder.WithOrigins("https://localhost:44304")
+                       .AllowAnyHeader()                      
+                       .AllowAnyMethod();                     
+            
+                builder.WithOrigins("https://mvcpartoftest.azurewebsites.net/")  
+                       .AllowAnyHeader()                      
+                       .AllowAnyMethod();
             });
         });
 

@@ -5,6 +5,7 @@ namespace MVCAndWebAPIAuthAndAuthTest.MVC
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            IConfiguration configuration = builder.Configuration;
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
@@ -12,7 +13,7 @@ namespace MVCAndWebAPIAuthAndAuthTest.MVC
             // Add HTTP client for API calls.
             builder.Services.AddHttpClient("ApiClient", client =>
             {
-                client.BaseAddress = new Uri("https://localhost:7189/api/");
+                client.BaseAddress = new Uri(configuration["GatewayAPIOrigin"]!);
             });
 
             var app = builder.Build();
