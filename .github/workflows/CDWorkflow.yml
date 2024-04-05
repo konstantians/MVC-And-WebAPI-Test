@@ -117,8 +117,11 @@ jobs:
         with:
           app-name: 'ApiPartOfTest'
           slot-name: 'production'
-          package: .net-api
+          package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E0C70FDBCA21402FB2DD103CA91F1EDC }}
+
+      - name: Delete all files from working directory
+        run: rm -rf *
       
       - name: Download MVC artifact from build job
         uses: actions/download-artifact@v3
@@ -130,7 +133,7 @@ jobs:
         with:
           app-name: 'MVCPartOfTest'
           slot-name: 'production'
-          package: .net-mvc
+          package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_2E12C0287DD846AFB9E33467B3A5BF17  }}
 
        
