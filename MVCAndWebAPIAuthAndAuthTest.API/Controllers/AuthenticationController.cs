@@ -15,11 +15,13 @@ public class AuthenticationController : ControllerBase
 {
     private readonly IAuthenticationProcedures _authenticationProcedures;
     private readonly IEmailService _emailService;
+    private readonly IConfiguration _configuration;
 
-    public AuthenticationController(IAuthenticationProcedures authenticationProcedures, IEmailService emailService)
+    public AuthenticationController(IAuthenticationProcedures authenticationProcedures, IEmailService emailService, IConfiguration configuration)
     {
         _authenticationProcedures = authenticationProcedures;
         _emailService = emailService;
+        _configuration = configuration;
     }
 
 
@@ -58,7 +60,7 @@ public class AuthenticationController : ControllerBase
 
             //maybe do a check here
             string message = "Click on the following link to confirm your email:";
-            string link = $"https://localhost:44304/Account/ConfirmEmail?userId={userId}&token={WebUtility.UrlEncode(confirmationToken)}";
+            string link = $"{_configuration["WebClientOriginUrl"]}/Account/ConfirmEmail?userId={userId}&token={WebUtility.UrlEncode(confirmationToken)}";
             string? confirmationLink = $"{message} {link}";
 
             var emailSentResult = await _emailService.SendEmailAsync(user.Email!, "Email Confirmation", confirmationLink);
@@ -128,7 +130,7 @@ public class AuthenticationController : ControllerBase
             string resetToken = await _authenticationProcedures.CreateResetPasswordTokenAsync(user);
 
             string message = "Click on the following link to reset your account password:";
-            string? link = $"https://localhost:44304/Account/ResetPassword?userId={user.Id}&token={WebUtility.UrlEncode(resetToken)}";
+            string? link = $"{_configuration["WebClientOriginUrl"]}/Account/ResetPassword?userId={user.Id}&token={WebUtility.UrlEncode(resetToken)}";
             string? confirmationLink = $"{message} {link}";
 
             bool result = await _emailService.SendEmailAsync(user.Email!, "Email Confirmation", confirmationLink);
@@ -286,7 +288,7 @@ public class AuthenticationController : ControllerBase
 
             string message = "Click on the following link to confirm your account's new email:";
             string? link = 
-                $"https://localhost:44304/Account/ConfirmChangeEmail?userId={user.Id}&newEmail={changeEmailModel.NewEmail}&token={WebUtility.UrlEncode(resetToken)}";
+                $"{_configuration["WebClientOriginUrl"]}/Account/ConfirmChangeEmail?userId={user.Id}&newEmail={changeEmailModel.NewEmail}&token={WebUtility.UrlEncode(resetToken)}";
 
             string? confirmationLink = $"{message} {link}";
             bool result = await _emailService.SendEmailAsync(changeEmailModel.NewEmail!, "Email Change Confirmation", confirmationLink);
