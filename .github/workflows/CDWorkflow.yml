@@ -120,8 +120,8 @@ jobs:
           package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E0C70FDBCA21402FB2DD103CA91F1EDC }}
 
-      - name: Delete all files from working directory
-        run: rm -rf *
+      - name: Clear working directory
+        run: Remove-Item -Path * -Force -Recurse
       
       - name: Download MVC artifact from build job
         uses: actions/download-artifact@v3
