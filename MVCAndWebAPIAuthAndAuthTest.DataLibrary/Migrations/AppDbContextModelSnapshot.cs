@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MVCAndWebAPIAuthAndAuthTest.DataLibrary.Migrations
 {
-    [DbContext(typeof(AppDbContext))]
+    [DbContext(typeof(SqlAppDbContext))]
     partial class AppDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -22,13 +22,10 @@ namespace MVCAndWebAPIAuthAndAuthTest.DataLibrary.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("MVCAndWebAPIAuthAndAuthTest.SharedModels.Post", b =>
+            modelBuilder.Entity("MVCAndWebAPIAuthAndAuthTest.DataLibrary.Models.SqlModels.SqlPostDataModel", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Guid")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -44,10 +41,9 @@ namespace MVCAndWebAPIAuthAndAuthTest.DataLibrary.Migrations
                         .HasColumnType("nvarchar(40)");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Guid");
 
                     b.ToTable("Posts");
                 });

@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MVCAndWebAPIAuthAndAuthTest.MVC.Models.EditAccountModels;
 using System.Net;
 using System.Text.Json;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Identity;
-using MVCAndWebAPIAuthAndAuthTest.MVC.Models;
+using MVCAndWebAPIAuthAndAuthTest.MVC.ViewModels;
+using MVCAndWebAPIAuthAndAuthTest.MVC.ViewModels.EditAccountViewModels;
 
 namespace MVCAndWebAPIAuthAndAuthTest.MVC.Controllers;
 
@@ -31,7 +31,7 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> SignUp(RegisterModel registerModel)
+    public async Task<IActionResult> SignUp(RegisterViewModel registerModel)
     {
         if (!string.IsNullOrEmpty(Request.Cookies["SocialMediaAppAuthenticationCookie"]))
             return RedirectToAction("Index", "Home");
@@ -110,7 +110,7 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> SignIn(SignInModel signInModel)
+    public async Task<IActionResult> SignIn(SignInViewModel signInModel)
     {
         if (!string.IsNullOrEmpty(Request.Cookies["SocialMediaAppAuthenticationCookie"]))
             return RedirectToAction("Index", "Home");
@@ -194,7 +194,7 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> ResetPassword(ResetPasswordModel resetPasswordModel)
+    public async Task<IActionResult> ResetPassword(ResetPasswordViewModel resetPasswordModel)
     {
         if (!ModelState.IsValid)
         {
@@ -259,17 +259,17 @@ public class AccountController : Controller
             PhoneNumber = user.PhoneNumber,
         };
 
-        ChangePasswordModel changePasswordModel = new()
+        ChangePasswordViewModel changePasswordModel = new()
         {
             OldPassword = user.PasswordHash
         };
 
-        ChangeEmailModel resetEmailModel = new()
+        ChangeEmailViewModel resetEmailModel = new()
         {
             OldEmail = user.Email
         };
 
-        EditAccountModel editAccountModel = new()
+        EditAccountViewModel editAccountModel = new()
         {
             AccountBasicSettingsViewModel = accountBasicSettingsViewModel,
             ChangePasswordModel = changePasswordModel,
@@ -336,7 +336,7 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> ChangePassword(ChangePasswordModel changePasswordModel)
+    public async Task<IActionResult> ChangePassword(ChangePasswordViewModel changePasswordModel)
     {
         string? accessToken = Request.Cookies["SocialMediaAppAuthenticationCookie"];
         if (string.IsNullOrEmpty(accessToken))
@@ -382,7 +382,7 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> RequestChangeAccountEmail(ChangeEmailModel changeEmailModel)
+    public async Task<IActionResult> RequestChangeAccountEmail(ChangeEmailViewModel changeEmailModel)
     {
         string? accessToken = Request.Cookies["SocialMediaAppAuthenticationCookie"];
         if (string.IsNullOrEmpty(accessToken))

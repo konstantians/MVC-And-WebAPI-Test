@@ -1,6 +1,8 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.Playwright.NUnit;
+using MVCAndWebAPIAuthAndAuthTest.EETestLibrary.HelperServices;
 using MVCAndWebAPIAuthAndAuthTest.EETestLibrary.Pages;
+using MVCAndWebAPIAuthAndAuthTest.EETestLibrary.Procedures;
 
 namespace MVCAndWebAPIAuthAndAuthTest.EETestLibrary.Tests;
 
@@ -80,38 +82,15 @@ public class Tests : PageTest
     }
 
     [TearDown]
-    public void TearDown()
+    public async Task TearDown()
     {
-        string authConnectionString = Environment.GetEnvironmentVariable("DefaultAuthentication")!;
-        string dataConnectionString = Environment.GetEnvironmentVariable("DefaultData")!;
+        //The authentication database is always sql server
+        ResetDatabaseService.ResetSqlAuthenticationDatabase();
 
-        using SqlConnection connection = new SqlConnection(authConnectionString);
-        connection.Open();
-
-        string[] tableNames = new string[] { "dbo.AspNetRoleClaims", "dbo.AspNetUserRoles", "dbo.AspNetUserClaims",
-            "dbo.AspNetUserLogins", "dbo.AspNetRoles", "dbo.AspNetUsers", "dbo.AspNetUserTokens"};
-
-        foreach (string tableName in tableNames)
-        {
-            string deleteQuery = $"DELETE FROM {tableName}";
-            using (SqlCommand deleteCommand = new SqlCommand(deleteQuery, connection))
-                deleteCommand.ExecuteNonQuery();
-        }
-
-        connection.Close();
-
-        using SqlConnection dataConnection = new SqlConnection(dataConnectionString);
-        dataConnection.Open();
-
-        string[] dataTableNames = new string[] {"dbo.Posts"};
-
-        foreach (string tableName in dataTableNames)
-        {
-            string deleteQuery = $"DELETE FROM {tableName}";
-            using (SqlCommand deleteCommand = new SqlCommand(deleteQuery, dataConnection))
-                deleteCommand.ExecuteNonQuery();
-        }
-
-        dataConnection.Close();
+        string databaseMode = Environment.GetEnvironmentVariable("DatabaseInUse")!;
+        if(databaseMode == "SqlServer")
+            ResetDatabaseService.ResetSqlDataDatabase();
+        else
+            await ResetDatabaseService.ResetNoSqlDatabase();
     }
 }

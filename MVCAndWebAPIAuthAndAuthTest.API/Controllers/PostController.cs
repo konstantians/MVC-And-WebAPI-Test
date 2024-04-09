@@ -2,9 +2,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MVCAndWebAPIAuthAndAuthTest.API.Models;
+using MVCAndWebAPIAuthAndAuthTest.API.RequestModels;
 using MVCAndWebAPIAuthAndAuthTest.AuthLibrary;
-using MVCAndWebAPIAuthAndAuthTest.DataLibrary;
-using MVCAndWebAPIAuthAndAuthTest.SharedModels;
+using System.Net;
+using System.Text.Json;
 
 namespace MVCAndWebAPIAuthAndAuthTest.API.Controllers;
 
@@ -13,12 +14,12 @@ namespace MVCAndWebAPIAuthAndAuthTest.API.Controllers;
 public class PostController : ControllerBase
 {
     private readonly IAuthenticationProcedures _authenticationProcedures;
-    private readonly IPostDataAccess _postDataAccess;
+    private readonly HttpClient httpClient;
 
-    public PostController(IAuthenticationProcedures authenticationProcedures, IPostDataAccess postDataAccess)
+    public PostController(IAuthenticationProcedures authenticationProcedures, IHttpClientFactory httpClientFactory)
     {
         _authenticationProcedures = authenticationProcedures;
-        _postDataAccess = postDataAccess;
+        httpClient = httpClientFactory.CreateClient("DataAccessRestApiClient"); 
     }
 
     [AllowAnonymous]
@@ -27,18 +28,19 @@ public class PostController : ControllerBase
     {
         try
         {
-            List<Post> posts = new List<Post>();
-            var result = await _postDataAccess.GetPostsAsync(30);
-            if (result is not null)
-            {
-                posts = result.ToList();
-                foreach (Post post in posts)
-                {
-                    post.AppUser = await _authenticationProcedures.FindByUserIdAsync(post.UserId);
-                }
-            }
+            var response = await httpClient.GetAsync("DataPost");
 
-            return Ok(posts);
+            if (response.StatusCode == HttpStatusCode.InternalServerError)
+                return StatusCode(500, "Internal Server Error");
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+            List<ApiPostModel> apiPostModels = JsonSerializer.Deserialize<List<ApiPostModel>>(
+                responseBody, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+
+            foreach (ApiPostModel apiPostModel in apiPostModels)
+                apiPostModel.AppUser = await _authenticationProcedures.FindByUserIdAsync(apiPostModel.UserId!);
+
+            return Ok(apiPostModels);
         }
         catch
         {
@@ -59,15 +61,27 @@ public class PostController : ControllerBase
             if (user is null)
                 return BadRequest(new { ErrorMessage = "InvalidToken"});
 
-            Post post = new Post();
-            post.Title = createPostModel.Title;
-            post.Content = createPostModel.Content;
-            post.SentAt = DateTime.Now;
-            post.UserId = user.Id;
+            var apiCreatePostModel = new Dictionary<string, string>
+            {
+                { "title", createPostModel.Title! },
+                { "content", createPostModel.Content! },
+                { "userId", user.Id! }
+            };
 
-            var result = await _postDataAccess.CreatePostAsync(post);
-            if (result == -1)
+            var response = await httpClient.PostAsJsonAsync("DataPost", apiCreatePostModel);
+
+            if (response.StatusCode == HttpStatusCode.InternalServerError)
+                return StatusCode(500, "Internal Server Error");
+
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                var responseBody = await response.Content.ReadAsStringAsync();
+                var responseObject = JsonSerializer.Deserialize<Dictionary<string, string>>(responseBody);
+                if (responseObject is null)
+                    return BadRequest();
+
                 return BadRequest(new { ErrorMessage = "FailedPostCreation" });
+            }
 
             return Ok();
         }
@@ -90,22 +104,33 @@ public class PostController : ControllerBase
             if (user is null)
                 return BadRequest(new { ErrorMessage = "InvalidToken" });
 
-            var userPosts = await _postDataAccess.GetPostsOfUserAsync(user.Id);
-            int postId = Convert.ToInt32(editPostModel.PostId);
-            bool userOwnsPost = userPosts.ToList().Any(post => post.Id == postId);
+            var apiEditPostModel = new Dictionary<string, string>
+            {
+                { "guid", editPostModel.Guid! },
+                { "title", editPostModel.Title! },
+                { "content", editPostModel.Content! },
+                { "userId", user.Id }
+            };
 
-            if (!userOwnsPost)
-                return BadRequest(new { ErrorMessage = "UserDoesNotOwnPost" });
+            var response = await httpClient.PutAsJsonAsync("DataPost", apiEditPostModel);
 
-            Post post = new Post();
-            post.Title = editPostModel.Title;
-            post.Content = editPostModel.Content;
-            post.SentAt = DateTime.Now;
-            post.UserId = user.Id;
+            if (response.StatusCode == HttpStatusCode.InternalServerError)
+                return StatusCode(500, "Internal Server Error");
 
-            var result = await _postDataAccess.UpdatePostAsync(postId, post);
-            if (!result)
-                return BadRequest(new {ErrorMessage = "FailedPostUpdate" });
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                var responseBody = await response.Content.ReadAsStringAsync();
+                var responseObject = JsonSerializer.Deserialize<Dictionary<string, string>>(responseBody);
+                if (responseObject is null)
+                    return BadRequest();
+
+                responseObject!.TryGetValue("errorMessage", out string? errorMessage);
+
+                if (errorMessage == "UserDoesNotOwnPost")
+                    return BadRequest(new { ErrorMessage = "UserDoesNotOwnPost" });
+
+                return BadRequest(new { ErrorMessage = "FailedPostUpdate" });
+            }
 
             return Ok();
         }
@@ -128,16 +153,25 @@ public class PostController : ControllerBase
             if (user is null)
                 return BadRequest(new { ErrorMessage = "InvalidToken" });
 
-            var userPosts = await _postDataAccess.GetPostsOfUserAsync(user.Id);
-            int postId = Convert.ToInt32(deletePostModel.PostId);
-            bool userOwnsPost = userPosts.ToList().Any(post => post.Id == postId);
+            var response = await httpClient.DeleteAsync($"DataPost/{deletePostModel.Guid}");
 
-            if (!userOwnsPost)
-                return BadRequest(new { ErrorMessage = "UserDoesNotOwnPost" });
+            if (response.StatusCode == HttpStatusCode.InternalServerError)
+                return StatusCode(500, "Internal Server Error");
 
-            var result = await _postDataAccess.DeletePostAsync(postId);
-            if (!result)
-                return BadRequest("failedPostDeletion");
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                var responseBody = await response.Content.ReadAsStringAsync();
+                var responseObject = JsonSerializer.Deserialize<Dictionary<string, string>>(responseBody);
+                if (responseObject is null)
+                    return BadRequest();
+
+                responseObject!.TryGetValue("errorMessage", out string? errorMessage);
+
+                if (errorMessage == "UserDoesNotOwnPost")
+                    return BadRequest(new { ErrorMessage = "UserDoesNotOwnPost" });
+
+                return BadRequest(new { ErrorMessage = "FailedPostDeletion" });
+            }
 
             return Ok();
         }

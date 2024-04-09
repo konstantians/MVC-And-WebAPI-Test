@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MVCAndWebAPIAuthAndAuthTest.API.Models;
+using MVCAndWebAPIAuthAndAuthTest.API.RequestModels;
 using MVCAndWebAPIAuthAndAuthTest.AuthLibrary;
 using MVCAndWebAPIAuthAndAuthTest.EmailLibrary;
 using System.Net;

@@ -12,7 +12,7 @@ public class ComparePasswordAttribute : ValidationAttribute
         _otherProperty = otherProperty;
     }
 
-    protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+    protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
         var otherPropertyInfo = validationContext.ObjectType.GetProperty(_otherProperty);
 

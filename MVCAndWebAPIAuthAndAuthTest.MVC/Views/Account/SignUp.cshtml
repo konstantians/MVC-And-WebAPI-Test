@@ -4,7 +4,7 @@
     bool duplicateEmail = (bool)ViewData["DuplicateEmail"]!;
 }
 
-@model RegisterModel
+@model RegisterViewModel
 
 @if (duplicateUsername || duplicateEmail)
 {

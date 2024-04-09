@@ -10,9 +10,9 @@ namespace MVCAndWebAPIAuthAndAuthTest.AuthLibrary
         Task<string> CreateChangeEmailTokenAsync(IdentityUser appUser, string newEmail);
         Task<string> CreateResetPasswordTokenAsync(IdentityUser appUser);
         Task<bool> DeleteUserAccountAsync(IdentityUser appUser);
-        Task<IdentityUser> FindByEmailAsync(string email);
-        Task<IdentityUser> FindByUserIdAsync(string userId);
-        Task<IdentityUser> FindByUsernameAsync(string username);
+        Task<IdentityUser?> FindByEmailAsync(string email);
+        Task<IdentityUser?> FindByUserIdAsync(string userId);
+        Task<IdentityUser?> FindByUsernameAsync(string username);
         Task<IdentityUser?> GetCurrentUserByToken(string token);
         Task<List<IdentityUser>> GetUsersAsync();
         Task<(string, string)> RegisterUserAsync(IdentityUser appUser, string password, bool isPersistent);

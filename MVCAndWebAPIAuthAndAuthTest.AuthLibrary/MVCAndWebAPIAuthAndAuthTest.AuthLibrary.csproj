@@ -18,10 +18,6 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App"></FrameworkReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\MVCAndWebAPIAuthAndAuthTest.SharedModels\MVCAndWebAPIAuthAndAuthTest.SharedModels.csproj" />
   </ItemGroup>    
 
 

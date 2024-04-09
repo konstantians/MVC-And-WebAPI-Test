@@ -8,11 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MVCAndWebAPIAuthAndAuthTest.SharedModels\MVCAndWebAPIAuthAndAuthTest.SharedModels.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\ResponseModels\" />
     <Folder Include="Views\Account\" />
   </ItemGroup>
 
