@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MVCAndWebAPIAuthAndAuthTest.DataLibrary.Migrations
 {
-    [DbContext(typeof(AppDbContext))]
+    [DbContext(typeof(SqlAppDbContext))]
     [Migration("20240403012430_InitialMigration")]
     partial class InitialMigration
     {

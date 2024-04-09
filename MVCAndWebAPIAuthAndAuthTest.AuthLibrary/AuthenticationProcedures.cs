@@ -57,7 +57,7 @@ public class AuthenticationProcedures : IAuthenticationProcedures
         }
     }
 
-    public async Task<IdentityUser> FindByUserIdAsync(string userId)
+    public async Task<IdentityUser?> FindByUserIdAsync(string userId)
     {
         try
         {
@@ -72,7 +72,7 @@ public class AuthenticationProcedures : IAuthenticationProcedures
         }
     }
 
-    public async Task<IdentityUser> FindByUsernameAsync(string username)
+    public async Task<IdentityUser?> FindByUsernameAsync(string username)
     {
         try
         {
@@ -86,7 +86,7 @@ public class AuthenticationProcedures : IAuthenticationProcedures
         }
     }
 
-    public async Task<IdentityUser> FindByEmailAsync(string email)
+    public async Task<IdentityUser?> FindByEmailAsync(string email)
     {
         try
         {
@@ -204,8 +204,8 @@ public class AuthenticationProcedures : IAuthenticationProcedures
     {
         try
         {
-            IdentityUser user = await FindByUsernameAsync(username);
-            var result = await _userManager.CheckPasswordAsync(user, password)!;
+            IdentityUser? user = await FindByUsernameAsync(username);
+            var result = await _userManager.CheckPasswordAsync(user!, password)!;
 
             if (!result)
             {
@@ -215,7 +215,7 @@ public class AuthenticationProcedures : IAuthenticationProcedures
 
             _logger.LogInformation(0003, "Successfully signed in user. Username={Username}, IsPersistent={IsPersistent}.",
                 username, isPersistent);
-            return GenerateToken(user, isPersistent);
+            return GenerateToken(user!, isPersistent);
         }
         catch (Exception ex)
         {
@@ -225,20 +225,6 @@ public class AuthenticationProcedures : IAuthenticationProcedures
             throw;
         }
     }
-
-    /*public async Task<bool> CheckIfUserIsLoggedIn()
-    {
-        try
-        {
-            return await Task.Run(() => _signInManager.IsSignedIn(_signInManager.Context.User));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(2010, ex, "An error occurred while trying to check if the user was logged in. " +
-                "ExceptionMessage: {ExceptionMessage}. StackTrace: {StackTrace}.", ex.Message, ex.StackTrace);
-            throw;
-        }
-    }*/
 
     public async Task<bool> UpdateUserAccountAsync(IdentityUser appUser)
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MVCAndWebAPIAuthAndAuthTest.MVC.Models;
-using MVCAndWebAPIAuthAndAuthTest.MVC.Models.IndexModels;
-using MVCAndWebAPIAuthAndAuthTest.SharedModels;
+using MVCAndWebAPIAuthAndAuthTest.MVC.ViewModels;
+using MVCAndWebAPIAuthAndAuthTest.MVC.ViewModels.IndexViewModels;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Headers;
@@ -33,7 +33,7 @@ namespace MVCAndWebAPIAuthAndAuthTest.MVC.Controllers
                 return View("Error");
 
             var responseBody = await response.Content.ReadAsStringAsync();
-            var responseObject = JsonSerializer.Deserialize<List<Post>>(responseBody, new JsonSerializerOptions { PropertyNameCaseInsensitive = true});
+            var responseObject = JsonSerializer.Deserialize<List<PostModel>>(responseBody, new JsonSerializerOptions { PropertyNameCaseInsensitive = true});
 
             IndexViewModel indexViewModel = new IndexViewModel();
             indexViewModel.Posts = responseObject!;
@@ -54,7 +54,7 @@ namespace MVCAndWebAPIAuthAndAuthTest.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddPost(CreatePostModel createPostModel)
+        public async Task<IActionResult> AddPost(CreatePostViewModel createPostModel)
         {
 
             string? accessToken = Request.Cookies["SocialMediaAppAuthenticationCookie"];
@@ -100,7 +100,7 @@ namespace MVCAndWebAPIAuthAndAuthTest.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditPost(EditPostModel editPostModel)
+        public async Task<IActionResult> EditPost(EditPostViewModel editPostModel)
         {
             string? accessToken = Request.Cookies["SocialMediaAppAuthenticationCookie"];
             if (string.IsNullOrEmpty(accessToken))
@@ -113,7 +113,7 @@ namespace MVCAndWebAPIAuthAndAuthTest.MVC.Controllers
 
             var apiEditPostModel = new Dictionary<string, string>
             {
-                { "postId", editPostModel.PostId.ToString() },
+                { "guid", editPostModel.Guid! },
                 { "title", editPostModel.Title! },
                 { "content", editPostModel.Content! }
             };
@@ -148,7 +148,7 @@ namespace MVCAndWebAPIAuthAndAuthTest.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeletePost(int postId)
+        public async Task<IActionResult> DeletePost(string guid)
         {
             string? accessToken = Request.Cookies["SocialMediaAppAuthenticationCookie"];
             if (string.IsNullOrEmpty(accessToken))
@@ -161,7 +161,7 @@ namespace MVCAndWebAPIAuthAndAuthTest.MVC.Controllers
 
             var apiDeletePostModel = new Dictionary<string, string>
             {
-                { "postId", postId.ToString() }
+                { "guid", guid }
             };
 
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);

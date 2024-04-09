@@ -17,5 +17,5 @@ public class Post
 
     [NotMapped]
     public IdentityUser? AppUser { get; set; }
-    public string UserId { get; set; }
+    public string? UserId { get; set; }
 }
