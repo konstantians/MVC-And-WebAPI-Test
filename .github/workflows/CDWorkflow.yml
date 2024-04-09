@@ -23,42 +23,27 @@ jobs:
       - name: Install EF Core Design package
         run: dotnet add MVCAndWebAPIAuthAndAuthTest.API/MVCAndWebAPIAuthAndAuthTest.API.csproj package Microsoft.EntityFrameworkCore.Design --version 7.0.17
       
-      - name: Restore Dependencies Of Module SharedModels
-        run: dotnet restore MVCAndWebAPIAuthAndAuthTest.SharedModels/MVCAndWebAPIAuthAndAuthTest.SharedModels.csproj
       - name: Restore Dependencies Of Module EmailServiceLibrary
         run: dotnet restore MVCAndWebAPIAuthAndAuthTest.EmailLibrary/MVCAndWebAPIAuthAndAuthTest.EmailLibrary.csproj
       - name: Restore Dependencies Of Module AuthenticationLibrary
         run: dotnet restore MVCAndWebAPIAuthAndAuthTest.AuthLibrary/MVCAndWebAPIAuthAndAuthTest.AuthLibrary.csproj
-      - name: Restore Dependencies Of Module DataAccessLibrary
-        run: dotnet restore MVCAndWebAPIAuthAndAuthTest.DataLibrary/MVCAndWebAPIAuthAndAuthTest.DataLibrary.csproj
       - name: Restore Dependencies Of Module API
         run: dotnet restore MVCAndWebAPIAuthAndAuthTest.API/MVCAndWebAPIAuthAndAuthTest.API.csproj
 
-      - name: Build Module SharedModels
-        run: dotnet build MVCAndWebAPIAuthAndAuthTest.SharedModels/MVCAndWebAPIAuthAndAuthTest.SharedModels.csproj --configuration Release --no-restore
       - name: Build Module EmailServiceLibrary
         run: dotnet build MVCAndWebAPIAuthAndAuthTest.EmailLibrary/MVCAndWebAPIAuthAndAuthTest.EmailLibrary.csproj --configuration Release --no-restore
       - name: Build Module AuthenticationLibrary
         run: dotnet build MVCAndWebAPIAuthAndAuthTest.AuthLibrary/MVCAndWebAPIAuthAndAuthTest.AuthLibrary.csproj --configuration Release --no-restore
-      - name: Build Module DataAccessLibrary
-        run: dotnet build MVCAndWebAPIAuthAndAuthTest.DataLibrary/MVCAndWebAPIAuthAndAuthTest.DataLibrary.csproj --configuration Release --no-restore
       - name: Build Module API
         run: dotnet build MVCAndWebAPIAuthAndAuthTest.API/MVCAndWebAPIAuthAndAuthTest.API.csproj --configuration Release --no-restore
-
-      - name: DataAccess Migrations
-        run: dotnet ef database update --project MVCAndWebAPIAuthAndAuthTest.DataLibrary/MVCAndWebAPIAuthAndAuthTest.DataLibrary.csproj --startup-project MVCAndWebAPIAuthAndAuthTest.API/MVCAndWebAPIAuthAndAuthTest.API.csproj --context AppDbContext --connection ${{ secrets.DefaultData }}
 
       - name: Authentication Migrations
         run: dotnet ef database update --project MVCAndWebAPIAuthAndAuthTest.AuthLibrary/MVCAndWebAPIAuthAndAuthTest.AuthLibrary.csproj --startup-project MVCAndWebAPIAuthAndAuthTest.API/MVCAndWebAPIAuthAndAuthTest.API.csproj --context AppIdentityDbContext --connection ${{ secrets.DefaultAuthentication }}
       
-      - name: Publish Module SharedModels
-        run: dotnet publish MVCAndWebAPIAuthAndAuthTest.SharedModels/MVCAndWebAPIAuthAndAuthTest.SharedModels.csproj --configuration Release --output "{{ env.DOTNET_ROOT }}\\myapp"
       - name: Publish Module EmailServiceLibrary
         run: dotnet publish MVCAndWebAPIAuthAndAuthTest.EmailLibrary/MVCAndWebAPIAuthAndAuthTest.EmailLibrary.csproj --configuration Release --output "${{ env.DOTNET_ROOT }}\\myapp"
       - name: Publish Module AuthenticationLibrary
         run: dotnet publish MVCAndWebAPIAuthAndAuthTest.AuthLibrary/MVCAndWebAPIAuthAndAuthTest.AuthLibrary.csproj --configuration Release --output "${{ env.DOTNET_ROOT }}\\myapp"
-      - name: Publish Module DataAccessLibrary
-        run: dotnet publish MVCAndWebAPIAuthAndAuthTest.DataLibrary/MVCAndWebAPIAuthAndAuthTest.DataLibrary.csproj --configuration Release --output "${{ env.DOTNET_ROOT }}\\myapp"
       - name: Publish Module API
         run: dotnet publish MVCAndWebAPIAuthAndAuthTest.API/MVCAndWebAPIAuthAndAuthTest.API.csproj --configuration Release --output "${{ env.DOTNET_ROOT }}\\myapp"
 
@@ -81,16 +66,10 @@ jobs:
           
       - name: Restore dependencies Of Module MVC
         run: dotnet restore MVCAndWebAPIAuthAndAuthTest.MVC/MVCAndWebAPIAuthAndAuthTest.MVC.csproj
-      - name: Restore dependencies Of Module SharedModels
-        run: dotnet restore MVCAndWebAPIAuthAndAuthTest.SharedModels/MVCAndWebAPIAuthAndAuthTest.SharedModels.csproj
 
-      - name: Build Module SharedModels
-        run: dotnet build MVCAndWebAPIAuthAndAuthTest.SharedModels/MVCAndWebAPIAuthAndAuthTest.SharedModels.csproj --configuration Release --no-restore
       - name: Build Module MVC
         run: dotnet build MVCAndWebAPIAuthAndAuthTest.MVC/MVCAndWebAPIAuthAndAuthTest.MVC.csproj --configuration Release --no-restore
       
-      - name: Publish Module SharedModels
-        run: dotnet publish MVCAndWebAPIAuthAndAuthTest.SharedModels/MVCAndWebAPIAuthAndAuthTest.SharedModels.csproj --configuration Release --output "{{ env.DOTNET_ROOT }}\\myapp"
       - name: Publish Module MVC
         run: dotnet publish MVCAndWebAPIAuthAndAuthTest.MVC/MVCAndWebAPIAuthAndAuthTest.MVC.csproj --configuration Release --output "${{ env.DOTNET_ROOT }}\\myapp"
 
@@ -99,14 +78,62 @@ jobs:
         with:
           name: .net-mvc
           path: ${{env.DOTNET_ROOT}}\\myapp
+          
+  build-dataAccess-microservice:
+    runs-on: windows-latest
+    
+    steps:
+      - uses: actions/@checkout@v4
 
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 7.x
+
+      - name: Restore Dependencies Of Module DataAccessLibrary
+        run: dotnet restore MVCAndWebAPIAuthAndAuthTest.DataLibrary/MVCAndWebAPIAuthAndAuthTest.DataLibrary.csproj
+      - name: Restore Dependencies Of Module DataLibraryRestAPI
+        run: dotnet restore MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI/MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.csproj
+
+      - name: Build Module DataAccessLibrary
+        run: dotnet build MVCAndWebAPIAuthAndAuthTest.DataLibrary/MVCAndWebAPIAuthAndAuthTest.DataLibrary.csproj --configuration Release --no-restore
+      - name: Build Module DataLibraryRestAPI
+        run: dotnet build MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI/MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.csproj --configuration Release --no-restore
+
+      - name: Publish Module DataAccessLibrary
+        run: dotnet publish MVCAndWebAPIAuthAndAuthTest.DataLibrary/MVCAndWebAPIAuthAndAuthTest.DataLibrary.csproj --configuration Release --output "${{ env.DOTNET_ROOT }}\\myapp"
+      - name: Publish Module DataLibraryRestAPI
+        run: dotnet publish MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI/MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.csproj --configuration Release --output "${{ env.DOTNET_ROOT }}\\myapp"  
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v3
+        with:
+          name: .net-dataAccess-microservice
+          path: ${{env.DOTNET_ROOT}}\\myapp
+      
   deploy:
     runs-on: windows-latest
-    needs: [build-API, build-MVC]
+    needs: [build-API, build-MVC, build-dataAccess-microservice]
     environment:
       name: 'production'
     
     steps:
+      - name: Download DataAccess Microservice artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: .net-dataAccess-microservice
+          
+      - name: Deploy DataAccess Microservice to Azure
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'RestApiPartOfTest'
+          slot-name: 'production'
+          package: .
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_CE9FBCD257CE45AD9BC935050B9FBEE4 }}
+          
+      - name: Clear working directory
+        run: Remove-Item -Path * -Force -Recurse
+        
       - name: Download API artifact from build job
         uses: actions/download-artifact@v3
         with:
