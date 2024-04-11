@@ -117,7 +117,7 @@ jobs:
           dotnet-version: 7.x
 
       - name: Restore Dependencies Of Module EmailLibrary
-        run: dotnet restore build MVCAndWebAPIAuthAndAuthTest.EmailLibrary/MVCAndWebAPIAuthAndAuthTest.EmailLibrary.csproj
+        run: dotnet restore MVCAndWebAPIAuthAndAuthTest.EmailLibrary/MVCAndWebAPIAuthAndAuthTest.EmailLibrary.csproj
       - name: Restore Dependencies Of Module EmailLibraryRestAPI
         run: dotnet restore MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI/MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.csproj
 
