@@ -1,11 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MVCAndWebAPIAuthAndAuthTest.DataLibrary.Models.NoSqlModels;
+using MVCAndWebAPIAuthAndAuthTest.DataLibrary.Models.InternalModels.NoSqlModels;
 
 namespace MVCAndWebAPIAuthAndAuthTest.DataLibrary;
 
 public class NoSqlAppDbContext : DbContext
 {
-
     public NoSqlAppDbContext(DbContextOptions<NoSqlAppDbContext> options) : base(options)
     {
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MVCAndWebAPIAuthAndAuthTest.DataLibrary.Logic;
-using MVCAndWebAPIAuthAndAuthTest.DataLibrary.Models.CrudModels;
-using MVCAndWebAPIAuthAndAuthTest.DataLibrary.Models.SqlModels;
+using MVCAndWebAPIAuthAndAuthTest.DataLibrary.Models.RequestModels;
+using MVCAndWebAPIAuthAndAuthTest.DataLibrary.Models.ResponseModels;
 
 namespace MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.Controllers;
 
@@ -21,8 +21,7 @@ public class DataPostController : ControllerBase
     {
         try
         {
-            List<SqlPostDataModel> posts = new List<SqlPostDataModel>();
-            var result = await _postDataAccess.GetPostsAsync(30);
+            IEnumerable<PostResponseModel> result = await _postDataAccess.GetPostsAsync(30);
 
             return Ok(result.ToList());
         }
@@ -33,11 +32,11 @@ public class DataPostController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddPost([FromBody] CreatePostModel createPostModel)
+    public async Task<IActionResult> AddPost([FromBody] CreatePostRequestModel createPostModel)
     {
         try
         {
-            var result = await _postDataAccess.CreatePostAsync(createPostModel);
+            string? result = await _postDataAccess.CreatePostAsync(createPostModel);
             if (result is null)
                 return BadRequest(new { ErrorMessage = "FailedPostCreation" });
 
@@ -50,11 +49,11 @@ public class DataPostController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> EditPost([FromBody] EditPostModel editPostModel)
+    public async Task<IActionResult> EditPost([FromBody] EditPostRequestModel editPostModel)
     {
         try
         {
-            var userPosts = await _postDataAccess.GetPostsOfUserAsync(editPostModel.UserId!);
+            IEnumerable<PostResponseModel> userPosts = await _postDataAccess.GetPostsOfUserAsync(editPostModel.UserId!);
             string guid = editPostModel.Guid!;
             bool userOwnsPost = userPosts.ToList().Any(post => post.Guid == guid);
 
@@ -85,7 +84,7 @@ public class DataPostController : ControllerBase
                 return BadRequest(new { ErrorMessage = "UserDoesNotOwnPost" });
             */
 
-            var result = await _postDataAccess.DeletePostAsync(guid);
+            bool result = await _postDataAccess.DeletePostAsync(guid);
             if (!result)
                 return BadRequest(new { ErrorMessage = "FailedPostDeletion" });
 

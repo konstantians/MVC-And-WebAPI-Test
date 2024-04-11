@@ -1,0 +1,36 @@
+﻿using MVCAndWebAPIAuthAndAuthTest.EmailLibrary.Models.InternalModels.NoSqlModels;
+using MVCAndWebAPIAuthAndAuthTest.EmailLibrary.Models.InternalModels.SqlModels;
+
+namespace MVCAndWebAPIAuthAndAuthTest.EmailLibrary.Models.ResponseModels;
+
+public class EmailResponseModel
+{
+    public string? Id { get; set; }
+    public DateTime SentAt { get; set; }
+    public string? Receiver { get; set; }
+    public string? Title { get; set; }
+    public string? Message { get; set; }
+
+    public EmailResponseModel()
+    {
+        
+    }
+
+    public EmailResponseModel(SqlEmailModel sqlEmailModel)
+    {
+        Id = sqlEmailModel.Id;
+        SentAt = sqlEmailModel.SentAt;
+        Receiver = sqlEmailModel.Receiver;
+        Title = sqlEmailModel.Title;
+        Message = sqlEmailModel.Message;
+    }
+
+    public EmailResponseModel(NoSqlEmailModel noSqlEmailModel)
+    {
+        Id = noSqlEmailModel.Id;
+        SentAt = noSqlEmailModel.SentAt;
+        Receiver = noSqlEmailModel.Receiver;
+        Title = noSqlEmailModel.Title;
+        Message = noSqlEmailModel.Message;
+    }
+}

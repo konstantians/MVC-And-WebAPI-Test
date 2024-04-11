@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MVCAndWebAPIAuthAndAuthTest.AuthLibrary;
-using MVCAndWebAPIAuthAndAuthTest.EmailLibrary;
 using SocialMediaApp.Authentication;
 using System.Text;
 
@@ -81,13 +80,16 @@ public class Program
         });
 
         builder.Services.AddScoped<IAuthenticationProcedures, AuthenticationProcedures>();
-        
+
+        builder.Services.AddHttpClient("EmailRestApiClient", client =>
+        {
+            client.BaseAddress = new Uri(configuration["EmailRestApiOrigin"]!);
+        });
+
         builder.Services.AddHttpClient("DataAccessRestApiClient", client =>
         {
             client.BaseAddress = new Uri(configuration["DataAccessRestApiOrigin"]!);
         });
-
-        builder.Services.AddSingleton<IEmailService, EmailService>();
 
         var app = builder.Build();
 

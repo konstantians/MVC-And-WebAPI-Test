@@ -15,7 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MVCAndWebAPIAuthAndAuthTest.AuthLibrary\MVCAndWebAPIAuthAndAuthTest.AuthLibrary.csproj" />
-    <ProjectReference Include="..\MVCAndWebAPIAuthAndAuthTest.EmailLibrary\MVCAndWebAPIAuthAndAuthTest.EmailLibrary.csproj" />
   </ItemGroup>
 
 </Project>

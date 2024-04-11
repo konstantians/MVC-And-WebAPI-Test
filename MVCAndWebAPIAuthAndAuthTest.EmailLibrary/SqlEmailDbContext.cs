@@ -1,20 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using MVCAndWebAPIAuthAndAuthTest.DataLibrary.Models.InternalModels.SqlModels;
+using MVCAndWebAPIAuthAndAuthTest.EmailLibrary.Models.InternalModels.SqlModels;
 
-namespace MVCAndWebAPIAuthAndAuthTest.DataLibrary;
+namespace MVCAndWebAPIAuthAndAuthTest.EmailLibrary;
 
-public class SqlAppDbContext : DbContext
+public class SqlEmailDbContext : DbContext
 {
     private readonly IConfiguration? _configuration;
 
     //used for migrations
-    public SqlAppDbContext()
+    public SqlEmailDbContext()
     {
-
+        
     }
 
-    public SqlAppDbContext(DbContextOptions<SqlAppDbContext> options, IConfiguration configuration) : base(options)
+    public SqlEmailDbContext(DbContextOptions options, IConfiguration configuration) : base(options)
     {
         _configuration = configuration;
     }
@@ -24,7 +24,7 @@ public class SqlAppDbContext : DbContext
         //this is used for migrations, because the configuration can not be instantiated without the application running
         if (_configuration is null)
         {
-            optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Database=MVCAndWebAPIDataDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False",
+            optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Database=MVCAndWebAPIEmailDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False",
                 options => options.EnableRetryOnFailure());
             return;
         }
@@ -37,12 +37,13 @@ public class SqlAppDbContext : DbContext
             options => options.EnableRetryOnFailure());
     }
 
-    public DbSet<SqlPostDataModel> Posts { get; set; }
-
+    public DbSet<SqlEmailModel> Emails { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<SqlPostDataModel>().HasKey(post => post.Guid);
+        modelBuilder.Entity<SqlEmailModel>().HasKey("Id");
 
         base.OnModelCreating(modelBuilder);
     }
 }
+
+

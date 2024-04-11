@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using MVCAndWebAPIAuthAndAuthTest.API.Models;
-using MVCAndWebAPIAuthAndAuthTest.API.RequestModels;
+using MVCAndWebAPIAuthAndAuthTest.API.Models.RequestModels;
+using MVCAndWebAPIAuthAndAuthTest.API.Models.ResponseModels;
 using MVCAndWebAPIAuthAndAuthTest.AuthLibrary;
 using System.Net;
 using System.Text.Json;
@@ -34,10 +34,10 @@ public class PostController : ControllerBase
                 return StatusCode(500, "Internal Server Error");
 
             var responseBody = await response.Content.ReadAsStringAsync();
-            List<ApiPostModel> apiPostModels = JsonSerializer.Deserialize<List<ApiPostModel>>(
+            List<ApiPostResponseModel> apiPostModels = JsonSerializer.Deserialize<List<ApiPostResponseModel>>(
                 responseBody, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
 
-            foreach (ApiPostModel apiPostModel in apiPostModels)
+            foreach (ApiPostResponseModel apiPostModel in apiPostModels)
                 apiPostModel.AppUser = await _authenticationProcedures.FindByUserIdAsync(apiPostModel.UserId!);
 
             return Ok(apiPostModels);
@@ -50,7 +50,7 @@ public class PostController : ControllerBase
 
     [Authorize]
     [HttpPost("AddPost")]
-    public async Task<IActionResult> AddPost(ApiCreatePostModel createPostModel)
+    public async Task<IActionResult> AddPost(ApiCreatePostRequestModel createPostModel)
     {
         try
         {
@@ -93,7 +93,7 @@ public class PostController : ControllerBase
 
     [Authorize]
     [HttpPost("EditPost")]
-    public async Task<IActionResult> EditPost(ApiEditPostModel editPostModel)
+    public async Task<IActionResult> EditPost(ApiEditPostRequestModel editPostModel)
     {
         try
         {
@@ -142,7 +142,7 @@ public class PostController : ControllerBase
 
     [Authorize]
     [HttpPost("DeletePost")]
-    public async Task<IActionResult> DeletePost(ApiDeletePostModel deletePostModel)
+    public async Task<IActionResult> DeletePost(ApiDeletePostRequestModel deletePostModel)
     {
         try
         {

@@ -52,14 +52,7 @@ public class PostActionsFlowTest : PageTest
     [TearDown]
     public async Task TearDown()
     {
-        //The authentication database is always sql server
-        ResetDatabaseService.ResetSqlAuthenticationDatabase();
-
-        string databaseMode = Environment.GetEnvironmentVariable("DatabaseInUse")!;
-        if (databaseMode == "SqlServer")
-            ResetDatabaseService.ResetSqlDataDatabase();
-        else
-            await ResetDatabaseService.ResetNoSqlDatabase();
+        await ResetDatabaseService.DefaultResetDatabaseActions();
     }
 
 }
