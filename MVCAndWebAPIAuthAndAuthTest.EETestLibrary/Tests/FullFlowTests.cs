@@ -8,7 +8,7 @@ namespace MVCAndWebAPIAuthAndAuthTest.EETestLibrary.Tests;
 
 [Parallelizable(ParallelScope.Self)]
 [TestFixture]
-public class Tests : PageTest
+public class FullFlowTests : PageTest
 {
     private LayoutPage _layoutPage;
     private SignUpPage _signUpPage;
@@ -84,13 +84,6 @@ public class Tests : PageTest
     [TearDown]
     public async Task TearDown()
     {
-        //The authentication database is always sql server
-        ResetDatabaseService.ResetSqlAuthenticationDatabase();
-
-        string databaseMode = Environment.GetEnvironmentVariable("DatabaseInUse")!;
-        if(databaseMode == "SqlServer")
-            ResetDatabaseService.ResetSqlDataDatabase();
-        else
-            await ResetDatabaseService.ResetNoSqlDatabase();
+        await ResetDatabaseService.DefaultResetDatabaseActions();
     }
 }

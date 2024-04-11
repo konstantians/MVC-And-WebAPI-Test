@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using MVCAndWebAPIAuthAndAuthTest.API.Models;
-using MVCAndWebAPIAuthAndAuthTest.API.RequestModels;
+using MVCAndWebAPIAuthAndAuthTest.API.Models.RequestModels;
 using MVCAndWebAPIAuthAndAuthTest.AuthLibrary;
-using MVCAndWebAPIAuthAndAuthTest.EmailLibrary;
 using System.Net;
+using System.Net.Http;
 
 namespace MVCAndWebAPIAuthAndAuthTest.API.Controllers;
 
@@ -15,14 +14,14 @@ namespace MVCAndWebAPIAuthAndAuthTest.API.Controllers;
 public class AuthenticationController : ControllerBase
 {
     private readonly IAuthenticationProcedures _authenticationProcedures;
-    private readonly IEmailService _emailService;
     private readonly IConfiguration _configuration;
+    private readonly HttpClient httpClient;
 
-    public AuthenticationController(IAuthenticationProcedures authenticationProcedures, IEmailService emailService, IConfiguration configuration)
+    public AuthenticationController(IAuthenticationProcedures authenticationProcedures, IConfiguration configuration, IHttpClientFactory httpClientFactory)
     {
         _authenticationProcedures = authenticationProcedures;
-        _emailService = emailService;
         _configuration = configuration;
+        httpClient = httpClientFactory.CreateClient("EmailRestApiClient");
     }
 
 
@@ -40,11 +39,11 @@ public class AuthenticationController : ControllerBase
 
     [HttpPost("SignUp")]
     [AllowAnonymous]
-    public async Task<IActionResult> SignUp([FromBody] ApiSignUpModel signUpModel)
+    public async Task<IActionResult> SignUp([FromBody] ApiSignUpRequestModel signUpModel)
     {
         try
         {
-            IdentityUser user = await _authenticationProcedures.FindByUsernameAsync(signUpModel.Username!);
+            IdentityUser? user = await _authenticationProcedures.FindByUsernameAsync(signUpModel.Username!);
             if (user is not null)
                 return BadRequest(new { ErrorMessage = "DuplicateUsername"});
 
@@ -64,8 +63,15 @@ public class AuthenticationController : ControllerBase
             string link = $"{_configuration["WebClientOriginUrl"]}/Account/ConfirmEmail?userId={userId}&token={WebUtility.UrlEncode(confirmationToken)}";
             string? confirmationLink = $"{message} {link}";
 
-            var emailSentResult = await _emailService.SendEmailAsync(user.Email!, "Email Confirmation", confirmationLink);
-            if (!emailSentResult)
+            var apiSendEmailModel = new Dictionary<string, string>
+            {
+                { "receiver", user.Email! },
+                { "title", "Email Confirmation" },
+                { "message", confirmationLink }
+            };
+
+            var response = await httpClient.PostAsJsonAsync("Emails", apiSendEmailModel);
+            if(response.StatusCode != HttpStatusCode.OK)
                 return Ok(new {Warning = "ConfirmationEmailNotSent"});
 
             return Ok(new {Warning = "None"});
@@ -95,7 +101,7 @@ public class AuthenticationController : ControllerBase
 
     [HttpPost("SignIn")]
     [AllowAnonymous]
-    public async Task<IActionResult> SignIn([FromBody] ApiSignInModel signInModel)
+    public async Task<IActionResult> SignIn([FromBody] ApiSignInRequestModel signInModel)
     {
         try
         {
@@ -115,11 +121,11 @@ public class AuthenticationController : ControllerBase
 
     [HttpPost("ForgotPassword")]
     [AllowAnonymous]
-    public async Task<IActionResult> ForgotPassword([FromBody] ApiForgotPasswordModel forgotPasswordModel)
+    public async Task<IActionResult> ForgotPassword([FromBody] ApiForgotPasswordRequestModel forgotPasswordModel)
     {
         try
         {
-            IdentityUser user;
+            IdentityUser? user;
             if (forgotPasswordModel.Username is not null || forgotPasswordModel.Username != "")
                 user = await _authenticationProcedures.FindByUsernameAsync(forgotPasswordModel.Username!);
             else
@@ -134,11 +140,18 @@ public class AuthenticationController : ControllerBase
             string? link = $"{_configuration["WebClientOriginUrl"]}/Account/ResetPassword?userId={user.Id}&token={WebUtility.UrlEncode(resetToken)}";
             string? confirmationLink = $"{message} {link}";
 
-            bool result = await _emailService.SendEmailAsync(user.Email!, "Email Confirmation", confirmationLink);
-            if (!result)
+            var apiSendEmailModel = new Dictionary<string, string>
+            {
+                { "title", "Reset Password Confirmation" },
+                { "message", confirmationLink },
+                { "receiver", user.Email! }
+            };
+
+            var response = await httpClient.PostAsJsonAsync("Emails", apiSendEmailModel);
+            if (response.StatusCode != HttpStatusCode.OK)
                 return Ok(new { Warning = "ResetEmailNotSent" });
 
-            return Ok(new { Warning = "None"});
+            return Ok(new { Warning = "None" });
         }
         catch
         {
@@ -152,7 +165,7 @@ public class AuthenticationController : ControllerBase
     {
         try
         {
-            IdentityUser user = await _authenticationProcedures.FindByUserIdAsync(userId);
+            IdentityUser? user = await _authenticationProcedures.FindByUserIdAsync(userId);
             if(user is null)
                 return BadRequest();
 
@@ -166,7 +179,7 @@ public class AuthenticationController : ControllerBase
 
     [HttpPost("ResetPassword")]
     [AllowAnonymous]
-    public async Task<IActionResult> ResetPassword([FromBody] ApiResetPasswordModel resetPasswordModel)
+    public async Task<IActionResult> ResetPassword([FromBody] ApiResetPasswordRequestModel resetPasswordModel)
     {
         try
         {
@@ -208,7 +221,7 @@ public class AuthenticationController : ControllerBase
 
     [HttpPost("ChangeBasicAccountSettings")]
     [Authorize]
-    public async Task<IActionResult> ChangeBasicAccountSettings([FromBody] ApiAccountBasicSettingsViewModel accountBasicSettingsViewModel)
+    public async Task<IActionResult> ChangeBasicAccountSettings([FromBody] ApiAccountBasicSettingsRequestModel accountBasicSettingsViewModel)
     {
         try
         {
@@ -219,7 +232,7 @@ public class AuthenticationController : ControllerBase
             if (user is null)
                 return BadRequest(new { ErrorMessage = "InvalidToken"});
 
-            IdentityUser otherUser = await _authenticationProcedures.FindByUsernameAsync(accountBasicSettingsViewModel.Username!);
+            IdentityUser? otherUser = await _authenticationProcedures.FindByUsernameAsync(accountBasicSettingsViewModel.Username!);
             
             //there is another given with the given username
             if (otherUser is not null && otherUser.Email != user.Email)
@@ -241,7 +254,7 @@ public class AuthenticationController : ControllerBase
 
     [HttpPost("ChangePassword")]
     [Authorize]
-    public async Task<IActionResult> ChangePassword([FromBody] ApiChangePasswordModel changePasswordModel)
+    public async Task<IActionResult> ChangePassword([FromBody] ApiChangePasswordRequestModel changePasswordModel)
     {
         try
         {
@@ -270,7 +283,7 @@ public class AuthenticationController : ControllerBase
 
     [HttpPost("RequestChangeAccountEmail")]
     [Authorize]
-    public async Task<IActionResult> RequestChangeAccountEmail([FromBody] ApiChangeEmailModel changeEmailModel)
+    public async Task<IActionResult> RequestChangeAccountEmail([FromBody] ApiChangeEmailRequestModel changeEmailModel)
     {
         try
         {
@@ -281,7 +294,7 @@ public class AuthenticationController : ControllerBase
             if (user is null)
                 return BadRequest(new { ErrorMessage = "InvalidToken" });
 
-            IdentityUser otherUser = await _authenticationProcedures.FindByEmailAsync(changeEmailModel.NewEmail!);
+            IdentityUser? otherUser = await _authenticationProcedures.FindByEmailAsync(changeEmailModel.NewEmail!);
             if (otherUser is not null)
                 return BadRequest(new { ErrorMessage = "DuplicateEmail" });
 
@@ -292,8 +305,16 @@ public class AuthenticationController : ControllerBase
                 $"{_configuration["WebClientOriginUrl"]}/Account/ConfirmChangeEmail?userId={user.Id}&newEmail={changeEmailModel.NewEmail}&token={WebUtility.UrlEncode(resetToken)}";
 
             string? confirmationLink = $"{message} {link}";
-            bool result = await _emailService.SendEmailAsync(changeEmailModel.NewEmail!, "Email Change Confirmation", confirmationLink);
-            if (!result)
+
+            var apiSendEmailModel = new Dictionary<string, string>
+            {
+                { "title", "Email Change Confirmation" },
+                { "message", confirmationLink },
+                { "receiver", user.Email! }
+            };
+
+            var response = await httpClient.PostAsJsonAsync("Emails", apiSendEmailModel);
+            if (response.StatusCode != HttpStatusCode.OK)
                 return Ok(new { Warning = "EmailNotSent" });
 
             user.EmailConfirmed = false;
