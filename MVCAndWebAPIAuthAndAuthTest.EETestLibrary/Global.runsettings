@@ -9,9 +9,9 @@
     <EnvironmentVariables>
       <EmailDatabaseInUse>Cosmos</EmailDatabaseInUse> <!-- Either SqlServer or Cosmos for now -->
       <DataDatabaseInUse>Cosmos</DataDatabaseInUse> <!-- Either SqlServer or Cosmos for now -->
-      <SqlData>Data Source=(localdb)\MSSQLLocalDB;Database=MVCAndWebAPIDataDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False</SqlData>
-      <SqlEmail>Data Source=(localdb)\MSSQLLocalDB;Database=MVCAndWebAPIEmailDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False</SqlEmail>
-      <SqlAuthentication>Data Source=(localdb)\MSSQLLocalDB;Database=MVCAndWebAPIAuthDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False</SqlAuthentication>
+      <SqlData>Data Source=(localdb)\MSSQLLocalDB;AttachDbFilename=D:\Visual Studio\LocalDbDatabases\MVCAndWebAPIDataDb.mdf;Initial Catalog=MVCAndWebAPIDataDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False</SqlData>
+      <SqlEmail>Data Source=(localdb)\MSSQLLocalDB;AttachDbFilename=D:\Visual Studio\LocalDbDatabases\MVCAndWebAPIEmailDb.mdf;Initial Catalog=MVCAndWebAPIEmailDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False</SqlEmail>
+      <SqlAuthentication>Data Source=(localdb)\MSSQLLocalDB;AttachDbFilename=D:\Visual Studio\LocalDbDatabases\MVCAndWebAPIAuthDb.mdf;Initial Catalog=MVCAndWebAPIAuthDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False</SqlAuthentication>
       <CosmosDbConnectionString>AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==</CosmosDbConnectionString>
       <!-- For debugging selectors, it's recommend to set the following environment variable -->
       <DEBUG>pw:api</DEBUG>
