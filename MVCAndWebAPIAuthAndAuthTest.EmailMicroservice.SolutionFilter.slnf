@@ -1,0 +1,9 @@
+{
+  "solution": {
+    "path": "MVCAndWebAPIAuthAndAuthTest Solution.sln",
+    "projects": [
+      "MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI\\MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.csproj",
+      "MVCAndWebAPIAuthAndAuthTest.EmailLibrary\\MVCAndWebAPIAuthAndAuthTest.EmailLibrary.csproj"
+    ]
+  }
+}

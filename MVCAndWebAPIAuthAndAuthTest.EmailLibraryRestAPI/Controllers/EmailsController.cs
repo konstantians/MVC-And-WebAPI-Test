@@ -19,6 +19,23 @@ public class EmailsController : ControllerBase
         _emailService = emailService;
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetEmailEntry(string id)
+    {
+        try
+        {
+            EmailResponseModel? emailResponseModel = await _emailDataAccess.GetEmailEntryAsync(id);
+            if(emailResponseModel is null)
+                return NotFound();
+
+            return Ok(emailResponseModel);
+        }
+        catch
+        {
+            return StatusCode(500, "Internal Server Error");
+        }
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetEmailEntries()
     {
@@ -46,11 +63,11 @@ public class EmailsController : ControllerBase
             string? result = await _emailDataAccess.SaveEmailEntryAsync(emailRequestModel);
             if (result is null)
             {
-                //TODO think about that
-                return Ok();
+
+                return Ok(new {WarningMessage = "DatabaseEntryCreationFailure"});
             }
 
-            return Ok();
+            return Ok(new {WarningMessage = "None"});
         }
         catch
         {
@@ -59,15 +76,15 @@ public class EmailsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteEmailEntry(string guid)
+    public async Task<IActionResult> DeleteEmailEntry(string id)
     {
         try
         {
-            bool result = await _emailDataAccess.DeleteEmailEntryAsync(guid);
+            bool result = await _emailDataAccess.DeleteEmailEntryAsync(id);
             if (!result)
-                return BadRequest(new { ErrorMessage = "FailedEmailEntryDeletion" });
+                return NotFound(new { ErrorMessage = "FailedEmailEntryDeletion" });
 
-            return Ok();
+            return NoContent();
         }
         catch
         {

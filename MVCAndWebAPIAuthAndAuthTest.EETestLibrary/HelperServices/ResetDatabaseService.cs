@@ -98,7 +98,6 @@ public static class ResetDatabaseService
         Database database = cosmosClient.GetDatabase("GlobalDb");
         Container container = database.GetContainer("MVCAPITest_Emails");
 
-        Console.WriteLine("I am here");
         //all the documents of the container
         FeedIterator<dynamic> resultSetIterator = container.GetItemQueryIterator<dynamic>("SELECT * FROM c");
 
@@ -109,7 +108,6 @@ public static class ResetDatabaseService
 
             foreach (var document in response)
             {
-                Console.WriteLine($"id: {document.id}");
                 await container.DeleteItemAsync<dynamic>(id: document.id.ToString(),
                     partitionKey: new PartitionKey(document.Id.ToString()));
             }

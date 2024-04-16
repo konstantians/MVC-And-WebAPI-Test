@@ -24,7 +24,7 @@ public class SqlEmailDbContext : DbContext
         //this is used for migrations, because the configuration can not be instantiated without the application running
         if (_configuration is null)
         {
-            optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Database=MVCAndWebAPIEmailDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False",
+            optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;AttachDbFilename=D:\\Visual Studio\\LocalDbDatabases\\MVCAndWebAPIEmailDb.mdf;Initial Catalog=MVCAndWebAPIEmailDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
                 options => options.EnableRetryOnFailure());
             return;
         }
