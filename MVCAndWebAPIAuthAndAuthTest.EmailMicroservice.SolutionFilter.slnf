@@ -2,6 +2,7 @@
   "solution": {
     "path": "MVCAndWebAPIAuthAndAuthTest Solution.sln",
     "projects": [
+      "MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests\\MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests.csproj",
       "MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI\\MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.csproj",
       "MVCAndWebAPIAuthAndAuthTest.EmailLibrary\\MVCAndWebAPIAuthAndAuthTest.EmailLibrary.csproj"
     ]

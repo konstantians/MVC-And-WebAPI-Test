@@ -31,16 +31,42 @@ public class DataPostController : ControllerBase
         }
     }
 
+    [HttpGet("{guid}")]
+    public async Task<IActionResult> GetPost(string guid)
+    {
+        try
+        {
+            PostResponseModel? result = await _postDataAccess.GetPostAsync(guid);
+            if (result is null)
+                return NotFound();
+
+            return Ok(result);
+        }
+        catch
+        {
+            return StatusCode(500, "Internal Server Error");
+        }
+    }
+
     [HttpPost]
     public async Task<IActionResult> AddPost([FromBody] CreatePostRequestModel createPostModel)
     {
         try
         {
-            string? result = await _postDataAccess.CreatePostAsync(createPostModel);
-            if (result is null)
+            string? createdEntityGuid = await _postDataAccess.CreatePostAsync(createPostModel);
+            if (createdEntityGuid is null)
                 return BadRequest(new { ErrorMessage = "FailedPostCreation" });
 
-            return Ok();
+            PostResponseModel postResponseModel = new PostResponseModel()
+            {
+                Guid = createdEntityGuid,
+                SentAt = DateTime.Now,
+                UserId = createPostModel.UserId,
+                Title = createPostModel.Title,
+                Content = createPostModel.Content,
+            };
+
+            return CreatedAtAction(nameof(GetPost), new { guid = createdEntityGuid }, postResponseModel);
         }
         catch
         {
@@ -88,7 +114,7 @@ public class DataPostController : ControllerBase
             if (!result)
                 return BadRequest(new { ErrorMessage = "FailedPostDeletion" });
 
-            return Ok();
+            return NoContent();
         }
         catch
         {

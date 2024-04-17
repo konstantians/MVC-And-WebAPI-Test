@@ -1,17 +1,16 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Microsoft.Data.SqlClient;
 
-namespace MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests.HelperMethods;
-
+namespace MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.Tests.HelperMethods;
 internal class ResetDatabaseHelperMethods
 {
-    public static async Task ResetNoSqlEmailDatabase()
+    public static async Task ResetNoSqlPostDatabase()
     {
         string cosmosDbConnectionString = Environment.GetEnvironmentVariable("CosmosDbConnectionString")!;
 
         CosmosClient cosmosClient = new CosmosClient(cosmosDbConnectionString);
         Database database = cosmosClient.GetDatabase("GlobalDb");
-        Container container = database.GetContainer("MVCAPITest_Emails");
+        Container container = database.GetContainer("MVCAPITest_Posts");
 
         //all the documents of the container
         FeedIterator<dynamic> resultSetIterator = container.GetItemQueryIterator<dynamic>("SELECT * FROM c");
@@ -24,17 +23,17 @@ internal class ResetDatabaseHelperMethods
             foreach (var document in response)
             {
                 await container.DeleteItemAsync<dynamic>(id: document.id.ToString(),
-                    partitionKey: new PartitionKey(document.Id.ToString()));
+                    partitionKey: new PartitionKey(document.Guid.ToString()));
             }
         }
 
-        Console.WriteLine("All documents deleted from NoSql email database.");
+        Console.WriteLine("All documents deleted from NoSql post database.");
     }
 
-    public static void ResetSqlEmailDatabase()
+    public static void ResetSqlPostDatabase()
     {
-        string connectionString = Environment.GetEnvironmentVariable("SqlEmail")!;
-        string[] tables = new string[] { "dbo.Emails" };
+        string connectionString = Environment.GetEnvironmentVariable("SqlData")!;
+        string[] tables = new string[] { "dbo.Posts" };
 
         using SqlConnection connection = new SqlConnection(connectionString);
         connection.Open();
@@ -48,7 +47,7 @@ internal class ResetDatabaseHelperMethods
 
         connection.Close();
 
-        Console.WriteLine("All documents deleted from Sql email database.");
+        Console.WriteLine("All documents deleted from Sql post database.");
     }
 
 
