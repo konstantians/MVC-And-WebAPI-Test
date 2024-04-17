@@ -11,6 +11,7 @@ public class PostResponseModel
     public string? Content { get; set; }
     public string? UserId { get; set; }
 
+    public PostResponseModel(){ }
     public PostResponseModel(SqlPostDataModel sqlPostDataModel)
     {
         Guid = sqlPostDataModel.Guid;

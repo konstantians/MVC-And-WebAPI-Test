@@ -5,6 +5,7 @@ using System.Net.Http.Json;
 using System.Net;
 using System.Text.Json;
 using MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests.HelperMethods;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests.IntegrationTests.ControllersTests;
 
@@ -144,5 +145,4 @@ public class EmailControllerTests
         else
             await ResetDatabaseHelperMethods.ResetNoSqlEmailDatabase();
     }
-
 }

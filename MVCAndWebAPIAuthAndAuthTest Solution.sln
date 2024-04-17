@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MVCAndWebAPIAuthAndAuthTest
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests", "MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests\MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests.csproj", "{A2548442-C060-4218-B6BB-914E9962B852}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.Tests", "MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.Tests\MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.Tests.csproj", "{32B494D8-E73A-41A1-BF56-D4FB9E2FA6B6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{A2548442-C060-4218-B6BB-914E9962B852}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2548442-C060-4218-B6BB-914E9962B852}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2548442-C060-4218-B6BB-914E9962B852}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32B494D8-E73A-41A1-BF56-D4FB9E2FA6B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32B494D8-E73A-41A1-BF56-D4FB9E2FA6B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32B494D8-E73A-41A1-BF56-D4FB9E2FA6B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32B494D8-E73A-41A1-BF56-D4FB9E2FA6B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
