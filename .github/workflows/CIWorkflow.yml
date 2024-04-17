@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
   
 jobs:
-  build:
+  build_and_test_mvc:
     runs-on: windows-latest
 
     steps:
@@ -15,10 +15,96 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 7.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
+    
+    - name: Restore MVC Module Dependencies
+      run: dotnet restore MVCAndWebAPIAuthAndAuthTest.MVC/MVCAndWebAPIAuthAndAuthTest.MVC.csproj
+    - name: Build MVC Module
+      run: dotnet build MVCAndWebAPIAuthAndAuthTest.MVC/MVCAndWebAPIAuthAndAuthTest.MVC.csproj --no-restore
     # add tests eventually
     # - name: Test
     #  run: dotnet test --no-build --verbosity normal
+
+  build_and_test_gateway_api:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+    - uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 7.0.x
+    
+    - name: Restore Gateway API Module Dependencies
+      run: dotnet restore MVCAndWebAPIAuthAndAuthTest.API/MVCAndWebAPIAuthAndAuthTest.API.csproj
+    - name: Restore AuthLibrary Module Dependencies
+      run: dotnet restore MVCAndWebAPIAuthAndAuthTest.AuthLibrary/MVCAndWebAPIAuthAndAuthTest.AuthLibrary.csproj
+    
+    - name: Build Gateway API Module
+      run: dotnet build MVCAndWebAPIAuthAndAuthTest.API/MVCAndWebAPIAuthAndAuthTest.API.csproj --no-restore
+    - name: Build AuthLibrary Module
+      run: dotnet build MVCAndWebAPIAuthAndAuthTest.AuthLibrary/MVCAndWebAPIAuthAndAuthTest.AuthLibrary.csproj --no-restore
+      
+  build_and_test_dataaccess_microservice:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+    - uses: action/setup-dotnet@v4
+      with:
+        dotnet-version: 7.0.x
+        
+    - name: Restore DataLibrary Module Dependencies
+      run: dotnet restore MVCAndWebAPIAuthAndAuthTest.DataLibrary/MVCAndWebAPIAuthAndAuthTest.DataLibrary.csproj
+    - name: Restore DataLibraryRestAPI Module Dependencies
+      run: dotnet restore MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI/MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.csproj
+    - name: Restore DataLibraryRestAPITests Module Dependencies
+      run: dotnet restore MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.Tests/MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.Tests.csproj
+
+    - name: Build DataLibrary Module
+      run: dotnet build MVCAndWebAPIAuthAndAuthTest.DataLibrary/MVCAndWebAPIAuthAndAuthTest.DataLibrary.csproj --no-restore
+    - name: Build DataLibraryRestAPI Module
+      run: dotnet build MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI/MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.csproj --no-restore
+    - name: Build DataLibraryRestAPITests Module
+      run: dotnet build MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.Tests/MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.Tests.csproj --no-restore
+
+  build_and_test_email_microservice:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 7.0.x
+
+    - name: Restore EmailLibrary Module Dependencies
+      run: dotnet restore MVCAndWebAPIAuthAndAuthTest.EmailLibrary/MVCAndWebAPIAuthAndAuthTest.EmailLibrary.csproj
+    - name: Restore EmailLibraryRestAPI Module Dependencies
+      run: dotnet restore MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI/MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.csproj
+    - name: Restore EmailLibraryRestAPITests Module Dependencies
+      run: dotnet restore MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests/MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests.csproj
+
+    - name: Build EmailLibrary Module
+      run: dotnet build MVCAndWebAPIAuthAndAuthTest.EmailLibrary/MVCAndWebAPIAuthAndAuthTest.EmailLibrary.csproj --no-restore
+    - name: Build EmailLibraryRestAPI Module
+      run: dotnet build MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI/MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.csproj --no-restore
+    - name: Build EmailLibraryRestAPITests Module
+      run: dotnet build MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests/MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests.csproj --no-restore
+
+  build_and_test_EE_test_library:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 7.0.x
+
+    - name: Restore EETestLibrary Module Dependencies
+      run: dotnet restore MVCAndWebAPIAuthAndAuthTest.EETestLibrary/MVCAndWebAPIAuthAndAuthTest.EETestLibrary.csproj
+    
+    - name: Build EETestLibrary Module
+      run: dotnet build MVCAndWebAPIAuthAndAuthTest.EETestLibrary/MVCAndWebAPIAuthAndAuthTest.EETestLibrary.csproj --no-restore
+    
