@@ -1,4 +1,4 @@
-﻿namespace MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests.HelperMethods;
+﻿namespace MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests.IntegrationTests.HelperMethods;
 
 public class EmailFileHelperMethods
 {

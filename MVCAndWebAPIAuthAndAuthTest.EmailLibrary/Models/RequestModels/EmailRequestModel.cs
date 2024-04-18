@@ -1,4 +1,4 @@
-﻿namespace MVCAndWebAPIAuthAndAuthTest.EmailLibrary.Models.DtoModels;
+﻿namespace MVCAndWebAPIAuthAndAuthTest.EmailLibrary.Models.RequestModels;
 
 public class EmailRequestModel
 {

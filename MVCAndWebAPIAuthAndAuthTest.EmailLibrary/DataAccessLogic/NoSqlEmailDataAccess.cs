@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging;
-using MVCAndWebAPIAuthAndAuthTest.EmailLibrary.Models.DtoModels;
+using MVCAndWebAPIAuthAndAuthTest.EmailLibrary.Models.RequestModels;
 using MVCAndWebAPIAuthAndAuthTest.EmailLibrary.Models.ResponseModels;
 using MVCAndWebAPIAuthAndAuthTest.EmailLibrary.Models.InternalModels.NoSqlModels;
 

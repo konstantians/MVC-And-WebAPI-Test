@@ -10,7 +10,7 @@ public class NoSqlEmailDbContext : DbContext
         
     }
 
-    public DbSet<NoSqlEmailModel> Emails { get; set; }
+    internal DbSet<NoSqlEmailModel> Emails { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<NoSqlEmailModel>().ToContainer("MVCAPITest_Emails").HasPartitionKey(email => email.Id);

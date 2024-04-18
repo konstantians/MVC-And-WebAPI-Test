@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MVCAndWebAPIAuthAndAuthTest.EmailLibrary;
 using MVCAndWebAPIAuthAndAuthTest.EmailLibrary.DataAccessLogic;
-using MVCAndWebAPIAuthAndAuthTest.EmailLibrary.Models.DtoModels;
+using MVCAndWebAPIAuthAndAuthTest.EmailLibrary.Models.RequestModels;
 using MVCAndWebAPIAuthAndAuthTest.EmailLibrary.Models.ResponseModels;
 
 namespace MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Controllers;
@@ -62,12 +62,9 @@ public class EmailsController : ControllerBase
 
             string? result = await _emailDataAccess.SaveEmailEntryAsync(emailRequestModel);
             if (result is null)
-            {
-
                 return Ok(new {WarningMessage = "DatabaseEntryCreationFailure"});
-            }
 
-            return Ok(new {WarningMessage = "None"});
+            return Ok(new { WarningMessage = "None" });
         }
         catch
         {
