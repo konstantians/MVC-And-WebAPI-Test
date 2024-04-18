@@ -1,6 +1,6 @@
 ﻿namespace MVCAndWebAPIAuthAndAuthTest.EmailLibrary;
 
-public class SmtpSettings
+internal class SmtpSettings
 {
     public string? Host { get; set; }
     public int Port { get; set; }

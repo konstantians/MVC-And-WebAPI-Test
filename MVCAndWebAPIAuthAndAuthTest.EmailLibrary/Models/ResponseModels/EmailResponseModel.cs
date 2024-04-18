@@ -11,12 +11,9 @@ public class EmailResponseModel
     public string? Title { get; set; }
     public string? Message { get; set; }
 
-    public EmailResponseModel()
-    {
-        
-    }
-
-    public EmailResponseModel(SqlEmailModel sqlEmailModel)
+    public EmailResponseModel(){}
+    
+    internal EmailResponseModel(SqlEmailModel sqlEmailModel)
     {
         Id = sqlEmailModel.Id;
         SentAt = sqlEmailModel.SentAt;
@@ -25,7 +22,7 @@ public class EmailResponseModel
         Message = sqlEmailModel.Message;
     }
 
-    public EmailResponseModel(NoSqlEmailModel noSqlEmailModel)
+    internal EmailResponseModel(NoSqlEmailModel noSqlEmailModel)
     {
         Id = noSqlEmailModel.Id;
         SentAt = noSqlEmailModel.SentAt;

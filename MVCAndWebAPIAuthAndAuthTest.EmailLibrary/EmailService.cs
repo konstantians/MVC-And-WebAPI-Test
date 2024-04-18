@@ -35,7 +35,7 @@ public class EmailService : IEmailService
     /// <returns>Confirmation on whether or not the email was send successfully</returns>
     public async Task<bool> SendEmailAsync(string emailSender, string emailReceiver, string title, string body)
     {
-        SmtpSettings smtpSettings = _configuration.GetSection("SmtpSettings").Get<SmtpSettings>();
+        SmtpSettings? smtpSettings = _configuration.GetSection("SmtpSettings").Get<SmtpSettings>();
 
         using var message = new MailMessage(emailSender, emailReceiver);
 

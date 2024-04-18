@@ -1,8 +1,8 @@
-﻿using MVCAndWebAPIAuthAndAuthTest.EmailLibrary.Models.DtoModels;
+﻿using MVCAndWebAPIAuthAndAuthTest.EmailLibrary.Models.RequestModels;
 
 namespace MVCAndWebAPIAuthAndAuthTest.EmailLibrary.Models.InternalModels.SqlModels;
 
-public class SqlEmailModel
+internal class SqlEmailModel
 {
     public string? Id { get; set; }
     public DateTime SentAt { get; set; }

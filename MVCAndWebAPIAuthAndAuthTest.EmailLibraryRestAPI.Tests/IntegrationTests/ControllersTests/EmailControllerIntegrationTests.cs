@@ -1,17 +1,18 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
-using MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests.TestModels;
 using System.Net.Http.Json;
 using System.Net;
 using System.Text.Json;
-using MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests.HelperMethods;
 using Microsoft.AspNetCore.Http.HttpResults;
+using MVCAndWebAPIAuthAndAuthTest.EmailLibrary.Models.ResponseModels;
+using MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests.IntegrationTests.HelperMethods;
 
 namespace MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests.IntegrationTests.ControllersTests;
 
 [TestFixture]
 [Category("Integration")]
-public class EmailControllerTests
+[Author("Konstantinos Kinnas", "kinnaskonstantinos0@gmail.com")]
+public class EmailControllerIntegrationTests
 {
     private HttpClient httpClient;
 
@@ -23,7 +24,6 @@ public class EmailControllerTests
     }
 
     [Test, Order(1)]
-    [Author("konstantinos kinnas", "kinnaskonstantinos0@gmail.com")]
     public async Task SendEmailAndSaveEmailEntry_ShouldReturnInternalServerError()
     {
         // Arrange
@@ -40,7 +40,6 @@ public class EmailControllerTests
     }
 
     [Test, Order(2)]
-    [Author("konstantinos kinnas", "kinnaskonstantinos0@gmail.com")]
     public async Task SendEmailAndSaveEmailEntry_ShouldCreateEmailEntryAndReturnOk()
     {
         // Arrange
@@ -61,14 +60,13 @@ public class EmailControllerTests
     }
 
     [Test, Order(3)]
-    [Author("konstantinos kinnas", "kinnaskonstantinos0@gmail.com")]
     public async Task GetEmailEntries_ShouldReturnEntriesAndReturnOk()
     {
         // Arrange
 
         // Act
         var response = await httpClient.GetAsync("/api/emails");
-        List<EmailTestModel>? emailTestModels = await response.Content.ReadFromJsonAsync<List<EmailTestModel>>();
+        List<EmailResponseModel>? emailTestModels = await response.Content.ReadFromJsonAsync<List<EmailResponseModel>>();
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -77,7 +75,6 @@ public class EmailControllerTests
     }
 
     [Test, Order(4)]
-    [Author("konstantinos kinnas", "kinnaskonstantinos0@gmail.com")]
     public async Task GetEmailEntry_ShouldReturnNotFound()
     {
         // Arrange
@@ -90,17 +87,16 @@ public class EmailControllerTests
     }
 
     [Test, Order(5)]
-    [Author("konstantinos kinnas", "kinnaskonstantinos0@gmail.com")]
     public async Task GetEmailEntry_ShouldReturnEntryAndReturnOk()
     {
         // Arrange
         var setupResponse = await httpClient.GetAsync("/api/emails");
-        List<EmailTestModel>? emailTestModels = await setupResponse.Content.ReadFromJsonAsync<List<EmailTestModel>>();
+        List<EmailResponseModel>? emailTestModels = await setupResponse.Content.ReadFromJsonAsync<List<EmailResponseModel>>();
         string? firstEmailTestModelId = emailTestModels!.FirstOrDefault()!.Id;
 
         // Act
         var response = await httpClient.GetAsync($"/api/emails/{firstEmailTestModelId}");
-        EmailTestModel? emailTestModel = await response.Content.ReadFromJsonAsync<EmailTestModel>();
+        EmailResponseModel? emailTestModel = await response.Content.ReadFromJsonAsync<EmailResponseModel>();
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -109,7 +105,6 @@ public class EmailControllerTests
     }
 
     [Test, Order(6)]
-    [Author("konstantinos kinnas", "kinnaskonstantinos0@gmail.com")]
     public async Task DeleteEmailEntry_ShouldReturnNotFound()
     {
         // Arrange
@@ -122,12 +117,11 @@ public class EmailControllerTests
     }
 
     [Test, Order(7)]
-    [Author("konstantinos kinnas", "kinnaskonstantinos0@gmail.com")]
     public async Task DeleteEmailEntry_ShouldDeleteEntryAndReturnNoContent()
     {
         // Arrange
         var setupResponse = await httpClient.GetAsync("/api/emails");
-        List<EmailTestModel>? emailTestModels = await setupResponse.Content.ReadFromJsonAsync<List<EmailTestModel>>();
+        List<EmailResponseModel>? emailTestModels = await setupResponse.Content.ReadFromJsonAsync<List<EmailResponseModel>>();
 
         // Act
         var response = await httpClient.DeleteAsync($"/api/emails/{emailTestModels!.FirstOrDefault()!.Id}");

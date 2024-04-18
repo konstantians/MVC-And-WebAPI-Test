@@ -37,7 +37,7 @@ public class SqlEmailDbContext : DbContext
             options => options.EnableRetryOnFailure());
     }
 
-    public DbSet<SqlEmailModel> Emails { get; set; }
+    internal DbSet<SqlEmailModel> Emails { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<SqlEmailModel>().HasKey("Id");
