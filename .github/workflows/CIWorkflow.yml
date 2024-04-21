@@ -20,9 +20,6 @@ jobs:
       run: dotnet restore MVCAndWebAPIAuthAndAuthTest.MVC/MVCAndWebAPIAuthAndAuthTest.MVC.csproj
     - name: Build MVC Module
       run: dotnet build MVCAndWebAPIAuthAndAuthTest.MVC/MVCAndWebAPIAuthAndAuthTest.MVC.csproj --no-restore
-    # add tests eventually
-    # - name: Test
-    #  run: dotnet test --no-build --verbosity normal
 
   build_and_test_gateway_api:
     runs-on: windows-latest
@@ -68,6 +65,9 @@ jobs:
     - name: Build DataLibraryRestAPITests Module
       run: dotnet build MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.Tests/MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.Tests.csproj --no-restore
 
+    - name: Run All Available Unit Tests In The DataAccess Microservice
+      run: dotnet test MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.Tests/MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.Tests.csproj --no-build --verbosity normal --filter TestCategory=Unit
+    
   build_and_test_email_microservice:
     runs-on: windows-latest
     
@@ -92,6 +92,9 @@ jobs:
     - name: Build EmailLibraryRestAPITests Module
       run: dotnet build MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests/MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests.csproj --no-restore
 
+    - name: Run All Available Unit Tests In The Email Microservice
+      run: dotnet test MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests/MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests.csproj --no-build --verbosity normal --filter TestCategory=Unit
+    
   build_and_test_EE_test_library:
     runs-on: windows-latest
     
