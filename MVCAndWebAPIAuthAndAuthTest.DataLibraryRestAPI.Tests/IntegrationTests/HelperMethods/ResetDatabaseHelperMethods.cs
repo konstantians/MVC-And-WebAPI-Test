@@ -1,7 +1,7 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Microsoft.Data.SqlClient;
 
-namespace MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.Tests.HelperMethods;
+namespace MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.Tests.IntegrationTests.HelperMethods;
 internal class ResetDatabaseHelperMethods
 {
     public static async Task ResetNoSqlPostDatabase()

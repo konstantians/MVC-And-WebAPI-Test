@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Cosmos.Serialization.HybridRow;
 using Newtonsoft.Json;
 
 namespace MVCAndWebAPIAuthAndAuthTest.EmailLibraryRestAPI.Tests.UnitTests.HelperMethods;

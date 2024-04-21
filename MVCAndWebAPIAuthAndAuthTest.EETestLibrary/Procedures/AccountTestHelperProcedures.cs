@@ -90,10 +90,13 @@ public class AccountTestHelperProcedures : IAccountTestHelperProcedures
         await _signInPage.NavigateToPage();
         Assert.IsTrue(await _signInPage.IsPageShown());
 
-        await _signInPage.ForgotPassword(username, email);
+        await _signInPage.ForgotPassword(username, email, clientError);
 
         if (clientError)
+        {
+            //EmailReaderService.DeleteLastEmailLink();
             return;
+        }
 
         if (serverErrorTestId != "")
         {

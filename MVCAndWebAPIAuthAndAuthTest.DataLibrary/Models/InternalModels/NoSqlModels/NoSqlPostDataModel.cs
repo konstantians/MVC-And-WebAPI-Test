@@ -2,7 +2,7 @@
 
 namespace MVCAndWebAPIAuthAndAuthTest.DataLibrary.Models.InternalModels.NoSqlModels;
 
-public class NoSqlPostDataModel
+internal class NoSqlPostDataModel
 {
     public string? Guid { get; set; }
     public DateTime SentAt { get; set; }

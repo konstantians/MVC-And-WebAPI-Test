@@ -12,7 +12,7 @@ public class PostResponseModel
     public string? UserId { get; set; }
 
     public PostResponseModel(){ }
-    public PostResponseModel(SqlPostDataModel sqlPostDataModel)
+    internal PostResponseModel(SqlPostDataModel sqlPostDataModel)
     {
         Guid = sqlPostDataModel.Guid;
         SentAt = sqlPostDataModel.SentAt;
@@ -21,7 +21,7 @@ public class PostResponseModel
         UserId = sqlPostDataModel.UserId;
     }
 
-    public PostResponseModel(NoSqlPostDataModel noSqlPostDataModel)
+    internal PostResponseModel(NoSqlPostDataModel noSqlPostDataModel)
     {
         Guid = noSqlPostDataModel.Guid;
         SentAt = noSqlPostDataModel.SentAt;

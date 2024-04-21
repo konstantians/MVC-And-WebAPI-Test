@@ -37,7 +37,7 @@ public class SqlAppDbContext : DbContext
             options => options.EnableRetryOnFailure());
     }
 
-    public DbSet<SqlPostDataModel> Posts { get; set; }
+    internal DbSet<SqlPostDataModel> Posts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -56,11 +56,17 @@ public class SignInPage
         await signInButton.ClickAsync();
     }
 
-    public async Task ForgotPassword(string username = "konstantinos", string email = "")
+    public async Task ForgotPassword(string username = "konstantinos", string email = "", bool clientError = false)
     {
         await forgotPasswordLink.ClickAsync();
 
-        if((username is null || username == "") && (email is null || email == ""))
+        if (clientError)
+        {
+            await forgotPasswordConfirmButton.ClickAsync();
+            return;
+        }
+
+        if ((username is null || username == "") && (email is null || email == ""))
             throw new AssertionException("Either the username or the email must be not null/empty");
 
         if (username != "" && username is not null)

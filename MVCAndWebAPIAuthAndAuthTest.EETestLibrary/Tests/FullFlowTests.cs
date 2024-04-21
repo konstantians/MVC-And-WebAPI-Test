@@ -1,4 +1,3 @@
-using Microsoft.Data.SqlClient;
 using Microsoft.Playwright.NUnit;
 using MVCAndWebAPIAuthAndAuthTest.EETestLibrary.HelperServices;
 using MVCAndWebAPIAuthAndAuthTest.EETestLibrary.Pages;
@@ -6,7 +5,6 @@ using MVCAndWebAPIAuthAndAuthTest.EETestLibrary.Procedures;
 
 namespace MVCAndWebAPIAuthAndAuthTest.EETestLibrary.Tests;
 
-[Parallelizable(ParallelScope.Self)]
 [TestFixture]
 public class FullFlowTests : PageTest
 {

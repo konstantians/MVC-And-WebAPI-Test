@@ -1,12 +1,10 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.Playwright.NUnit;
+﻿using Microsoft.Playwright.NUnit;
 using MVCAndWebAPIAuthAndAuthTest.EETestLibrary.HelperServices;
 using MVCAndWebAPIAuthAndAuthTest.EETestLibrary.Pages;
 using MVCAndWebAPIAuthAndAuthTest.EETestLibrary.Procedures;
 
 namespace MVCAndWebAPIAuthAndAuthTest.EETestLibrary.Tests;
 
-[Parallelizable(ParallelScope.Self)]
 [TestFixture]
 
 public class PostActionsFlowTest : PageTest
@@ -46,7 +44,7 @@ public class PostActionsFlowTest : PageTest
         await _postTestHelperProcedures.EditPost(clientError: true);
         await _postTestHelperProcedures.EditPost();
 
-        //await _postTestHelperProcedures.DeletePost();
+        await _postTestHelperProcedures.DeletePost();
     }
 
     [TearDown]
