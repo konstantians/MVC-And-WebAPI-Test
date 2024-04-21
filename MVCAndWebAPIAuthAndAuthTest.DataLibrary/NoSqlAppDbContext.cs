@@ -10,7 +10,7 @@ public class NoSqlAppDbContext : DbContext
 
     }
 
-    public DbSet<NoSqlPostDataModel> Posts { get; set; }
+    internal DbSet<NoSqlPostDataModel> Posts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

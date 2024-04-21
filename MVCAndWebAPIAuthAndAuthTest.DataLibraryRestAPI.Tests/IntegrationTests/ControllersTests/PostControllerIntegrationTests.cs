@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
-using MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.Tests.HelperMethods;
-using MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.Tests.TestModels;
+using MVCAndWebAPIAuthAndAuthTest.DataLibrary.Models.ResponseModels;
+using MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.Tests.IntegrationTests.HelperMethods;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -10,7 +10,7 @@ namespace MVCAndWebAPIAuthAndAuthTest.DataLibraryRestAPI.Tests.IntegrationTests.
 [TestFixture]
 [Category("Integration")]
 [Author("konstantinos", "kinnaskonstantinos0@gmail.com")]
-public class PostControllerTests
+public class PostControllerIntegrationTests
 {
     private HttpClient httpClient;
 
@@ -32,12 +32,12 @@ public class PostControllerTests
 
         //Act
         var response = await httpClient.PostAsJsonAsync("/api/dataPost", createPostModel);
-        PostTestModel? postTestModel = await response.Content.ReadFromJsonAsync<PostTestModel>();
+        PostResponseModel? postResponseModel = await response.Content.ReadFromJsonAsync<PostResponseModel>();
 
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.Created);
-        postTestModel.Should().NotBeNull();
-        postTestModel!.Guid.Should().Be(postTestModel.Guid);
+        postResponseModel.Should().NotBeNull();
+        postResponseModel!.Guid.Should().Be(postResponseModel.Guid);
     }
 
     [Test, Order(2)]
@@ -47,12 +47,12 @@ public class PostControllerTests
 
         //Act
         var response = await httpClient.GetAsync("/api/dataPost");
-        List<PostTestModel>? postTestModels = await response.Content.ReadFromJsonAsync<List<PostTestModel>>();
+        List<PostResponseModel>? postResponseModels = await response.Content.ReadFromJsonAsync<List<PostResponseModel>>();
 
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        postTestModels.Should().NotBeNull();
-        postTestModels.Should().HaveCount(count => count >= 1);
+        postResponseModels.Should().NotBeNull();
+        postResponseModels.Should().HaveCount(count => count >= 1);
     }
 
     [Test, Order(3)]
@@ -73,17 +73,17 @@ public class PostControllerTests
     {
         //Arrange
         var setupResponse = await httpClient.GetAsync("/api/dataPost");
-        List<PostTestModel>? postTestModels = await setupResponse.Content.ReadFromJsonAsync<List<PostTestModel>>();
-        string? firstPostGuid = postTestModels!.FirstOrDefault()!.Guid;
+        List<PostResponseModel>? postResponseModels = await setupResponse.Content.ReadFromJsonAsync<List<PostResponseModel>>();
+        string? firstPostGuid = postResponseModels!.FirstOrDefault()!.Guid;
 
         //Act
         var response = await httpClient.GetAsync($"/api/dataPost/{firstPostGuid}");
-        PostTestModel? postTestModel = await response.Content.ReadFromJsonAsync<PostTestModel>();
+        PostResponseModel? postResponseModel = await response.Content.ReadFromJsonAsync<PostResponseModel>();
 
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        postTestModel.Should().NotBeNull();
-        postTestModel!.Guid.Should().Be(firstPostGuid);
+        postResponseModel.Should().NotBeNull();
+        postResponseModel!.Guid.Should().Be(firstPostGuid);
     }
 
     [Test, Order(5)]
@@ -108,8 +108,8 @@ public class PostControllerTests
     {
         //Arrange
         var setupResponse = await httpClient.GetAsync("/api/dataPost");
-        List<PostTestModel>? postTestModels = await setupResponse.Content.ReadFromJsonAsync<List<PostTestModel>>();
-        string? firstPostGuid = postTestModels!.FirstOrDefault()!.Guid;
+        List<PostResponseModel>? postResponseModels = await setupResponse.Content.ReadFromJsonAsync<List<PostResponseModel>>();
+        string? firstPostGuid = postResponseModels!.FirstOrDefault()!.Guid;
 
         var editPostModel = new Dictionary<string, string>();
         editPostModel.TryAdd("Guid", firstPostGuid!);
@@ -142,8 +142,8 @@ public class PostControllerTests
     {
         //Arrange
         var setupResponse = await httpClient.GetAsync("/api/dataPost");
-        List<PostTestModel>? postTestModels = await setupResponse.Content.ReadFromJsonAsync<List<PostTestModel>>();
-        string? firstPostGuid = postTestModels!.FirstOrDefault()!.Guid;
+        List<PostResponseModel>? postResponseModels = await setupResponse.Content.ReadFromJsonAsync<List<PostResponseModel>>();
+        string? firstPostGuid = postResponseModels!.FirstOrDefault()!.Guid;
 
         //Act
         var response = await httpClient.DeleteAsync($"/api/dataPost/{firstPostGuid}");

@@ -28,4 +28,18 @@ public class EmailReaderService
         File.Delete(lastEmailFile);
         return link;
     }
+
+    public static void DeleteLastEmailLink()
+    {
+        string directoryPath = @"C:\ProgramData\Changemaker Studios\Papercut SMTP\Incoming";
+
+        List<string> emlFiles = Directory.GetFiles(directoryPath, "*.eml")
+                                .OrderByDescending(f => new FileInfo(f).LastWriteTime)
+                                .ToList();
+
+        //get the last one
+        string? lastEmailFile = emlFiles.FirstOrDefault();
+        if (lastEmailFile is not null)
+            File.Delete(lastEmailFile);
+    }
 }

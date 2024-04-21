@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MVCAndWebAPIAuthAndAuthTest.DataLibrary.Models.InternalModels.SqlModels;
 
-public class SqlPostDataModel
+internal class SqlPostDataModel
 {
     public string? Guid { get; set; }
     public DateTime SentAt { get; set; }

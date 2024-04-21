@@ -81,7 +81,7 @@ public class DataPostController : ControllerBase
         {
             IEnumerable<PostResponseModel> userPosts = await _postDataAccess.GetPostsOfUserAsync(editPostModel.UserId!);
             string guid = editPostModel.Guid!;
-            bool userOwnsPost = userPosts.ToList().Any(post => post.Guid == guid);
+            bool userOwnsPost = userPosts is null ? false : userPosts.ToList().Any(post => post.Guid == guid);
 
             if (!userOwnsPost)
                 return BadRequest(new { ErrorMessage = "UserDoesNotOwnPost" });
